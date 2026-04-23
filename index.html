@@ -3,112 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BodyTrack Pro | Club Ricardo 🦅</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="NutriTrack">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
     
+    <title>Club de Bienestar | NutriTrack 🌿</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK Clásico -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            background-color: #f0fdf4; /* Un verde menta muy suave */
+        }
         .vista { display: none; }
-        .vista.activa { display: block; animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .vista.activa { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .card-wellness { background: white; border-radius: 2rem; border: 1px solid #dcfce7; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .btn-green { background: #10b981; color: white; transition: all 0.2s; }
+        .btn-green:active { transform: scale(0.96); background: #059669; }
+        input:focus, select:focus { border-color: #10b981 !important; ring: 2px rgba(16, 185, 129, 0.2); }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 pb-28">
+<body class="text-slate-800 pb-32">
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center transition-all">
-        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <h1 class="text-white font-black italic text-xl">BODYTRACK PRO 🎸</h1>
-        <p id="msg-error" class="text-slate-500 text-[10px] mt-4 uppercase hidden text-center px-10"></p>
+    <!-- Pantalla de Carga Estilo Nutrición -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-emerald-50 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+        <h1 class="text-emerald-800 font-extrabold text-2xl tracking-tight flex items-center gap-2">
+            NUTRI-TRACK <i data-lucide="leaf" class="text-emerald-500"></i>
+        </h1>
+        <p class="text-emerald-600/60 text-[10px] font-bold uppercase tracking-widest mt-2 italic">Sincronizando Bienestar...</p>
     </div>
 
-    <main id="app" class="max-w-md mx-auto min-h-screen opacity-0">
+    <main id="app" class="max-w-md mx-auto min-h-screen opacity-0 transition-opacity duration-500">
         
+        <!-- DASHBOARD -->
         <section id="view-home" class="vista activa p-4 space-y-6">
-            <header class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                <h1 class="text-3xl font-black italic tracking-tighter leading-none relative z-10">CLUB AMÉRICA 🦅</h1>
-                <p class="text-yellow-500 text-[10px] font-black uppercase tracking-widest mt-2 relative z-10">Ricardo's Evaluation System</p>
-                <i data-lucide="activity" class="absolute -right-4 -top-4 opacity-10 w-32 h-32 rotate-12 text-white"></i>
+            <header class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <h1 class="text-2xl font-extrabold leading-none">¡Hola, Ricardo! 👋</h1>
+                    <p class="text-emerald-100 text-[11px] font-semibold mt-2">Bienvenidos a su Club de Nutrición</p>
+                </div>
+                <i data-lucide="sun" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12"></i>
             </header>
 
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="irA('view-clients')" class="p-8 bg-white rounded-[2rem] border border-slate-200 flex flex-col items-center shadow-sm">
-                    <i data-lucide="users" class="text-blue-600 mb-2"></i>
-                    <span class="font-black text-[10px] uppercase">Directorio</span>
+                <button onclick="irA('view-clients')" class="p-6 card-wellness flex flex-col items-center btn-press">
+                    <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-3"><i data-lucide="users"></i></div>
+                    <span class="font-bold text-slate-700 text-xs">Directorio</span>
                 </button>
-                <button onclick="irA('view-add')" class="p-8 bg-white rounded-[2rem] border border-slate-200 flex flex-col items-center shadow-sm">
-                    <i data-lucide="user-plus" class="text-green-600 mb-2"></i>
-                    <span class="font-black text-[10px] uppercase">Nuevo</span>
+                <button onclick="irA('view-add')" class="p-6 card-wellness flex flex-col items-center btn-press">
+                    <div class="p-4 bg-orange-50 text-orange-500 rounded-2xl mb-3"><i data-lucide="smile"></i></div>
+                    <span class="font-bold text-slate-700 text-xs">Nuevo Socio</span>
                 </button>
             </div>
 
-            <div class="bg-white p-6 rounded-[2.5rem] border border-slate-200">
-                <h2 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Actividad Reciente</h2>
-                <div id="recientes" class="space-y-3 text-xs font-bold text-slate-500 italic">Cargando...</div>
+            <div class="card-wellness p-6">
+                <h2 class="text-[10px] font-black uppercase text-emerald-600 mb-4 tracking-widest flex items-center gap-2">
+                    <i data-lucide="heart" size="14"></i> Actividad de hoy
+                </h2>
+                <div id="recientes" class="space-y-3">
+                    <div class="h-10 bg-slate-50 animate-pulse rounded-xl"></div>
+                </div>
             </div>
         </section>
 
+        <!-- DIRECTORIO -->
         <section id="view-clients" class="vista p-4 space-y-4">
             <div class="flex items-center gap-4">
-                <button onclick="irA('view-home')" class="p-3 bg-white rounded-2xl border shadow-sm"><i data-lucide="arrow-left" size="20"></i></button>
-                <h2 class="text-2xl font-black italic uppercase">Clientes</h2>
+                <button onclick="irA('view-home')" class="p-3 bg-white rounded-2xl border border-emerald-100 shadow-sm"><i data-lucide="arrow-left" size="20" class="text-emerald-600"></i></button>
+                <h2 class="text-xl font-extrabold text-emerald-900">Nuestros Socios</h2>
             </div>
             <div id="lista-clientes" class="space-y-3"></div>
         </section>
 
+        <!-- REGISTRO -->
         <section id="view-add" class="vista p-4 space-y-4">
-            <button onclick="irA('view-home')"><i data-lucide="arrow-left"></i></button>
-            <h2 class="text-2xl font-black italic uppercase px-2">Registro</h2>
-            <form onsubmit="crearCliente(event)" class="bg-white p-8 rounded-[3rem] shadow-xl space-y-5">
-                <input id="in-name" required placeholder="Nombre Completo" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold outline-none">
-                <div class="grid grid-cols-2 gap-4">
-                    <input id="in-age" required type="number" placeholder="Edad" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold">
-                    <select id="in-gender" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold">
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                    </select>
+            <button onclick="irA('view-home')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
+            <h2 class="text-2xl font-extrabold text-emerald-900 px-2">Nuevo Registro</h2>
+            <form onsubmit="crearCliente(event)" class="card-wellness p-8 space-y-5">
+                <div>
+                    <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Nombre Completo</label>
+                    <input id="in-name" required placeholder="Ej. Ana García" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold outline-none">
                 </div>
-                <button type="submit" class="w-full bg-slate-900 text-yellow-500 p-5 rounded-2xl font-black uppercase tracking-widest shadow-lg">Guardar 🎸</button>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Edad</label>
+                        <input id="in-age" required type="number" placeholder="Edad" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Sexo</label>
+                        <select id="in-gender" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold text-slate-500 outline-none">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full btn-green p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-200 mt-4">Comenzar Evaluación</button>
             </form>
         </section>
 
+        <!-- HISTORIAL -->
         <section id="view-history" class="vista p-4 space-y-6">
             <div class="flex items-center justify-between">
-                <button onclick="irA('view-clients')" class="p-2 bg-white rounded-xl border shadow-sm"><i data-lucide="arrow-left"></i></button>
+                <button onclick="irA('view-clients')" class="p-2 bg-white rounded-xl border border-emerald-100"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
                 <div class="text-center">
-                    <h2 id="h-nombre" class="font-black uppercase italic leading-none">Nombre</h2>
-                    <span id="h-edad" class="text-[9px] font-bold text-slate-400 uppercase">Edad</span>
+                    <h2 id="h-nombre" class="font-extrabold text-emerald-900 leading-none">Nombre</h2>
+                    <span id="h-info" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Resultados</span>
                 </div>
-                <button onclick="irA('view-eval')" class="bg-blue-600 text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus"></i></button>
+                <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg shadow-orange-100"><i data-lucide="plus"></i></button>
             </div>
             <div id="h-lista" class="space-y-4"></div>
         </section>
 
+        <!-- EVALUACIÓN -->
         <section id="view-eval" class="vista p-4 space-y-6">
-            <button onclick="irA('view-history')"><i data-lucide="arrow-left"></i></button>
-            <h2 class="text-2xl font-black italic uppercase">Evaluación</h2>
-            <form onsubmit="guardarEval(event)" class="bg-white p-8 rounded-[3rem] shadow-2xl space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Peso (kg)</label><input id="ev-w" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Talla (cm)</label><input id="ev-h" required type="number" step="1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Grasa</label><input id="ev-f" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
+            <button onclick="irA('view-history')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
+            <h2 class="text-2xl font-extrabold text-emerald-900">Nueva Medición</h2>
+            <form onsubmit="guardarEval(event)" class="card-wellness p-8 space-y-6">
+                <div class="grid grid-cols-2 gap-5">
+                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">Peso (kg)</label><input id="ev-w" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">Talla (cm)</label><input id="ev-h" required type="number" step="1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">% Grasa</label><input id="ev-f" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl">Calcular Diagnóstico</button>
+                <button type="submit" class="w-full btn-green p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-100">Ver Diagnóstico</button>
             </form>
         </section>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] glass border border-slate-200 px-8 py-5 flex justify-between rounded-[2.5rem] shadow-2xl z-50">
-            <button onclick="irA('view-home')" class="text-slate-400 hover:text-blue-600"><i data-lucide="home"></i></button>
-            <button onclick="irA('view-clients')" class="text-slate-400 hover:text-blue-600"><i data-lucide="users"></i></button>
-            <button onclick="irA('view-add')" class="text-slate-400 hover:text-blue-600"><i data-lucide="plus-circle"></i></button>
+        <!-- NAVEGACIÓN -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] glass border border-emerald-100 px-8 py-4 flex justify-between rounded-[2.5rem] shadow-xl z-50">
+            <button onclick="irA('view-home')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="home"></i></button>
+            <button onclick="irA('view-clients')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="clipboard-list"></i></button>
+            <button onclick="irA('view-add')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="user-plus"></i></button>
         </nav>
     </main>
 
@@ -123,55 +161,60 @@
         };
         firebase.initializeApp(config);
         const db = firebase.firestore();
-        const appId = 'body-track-3ff2b';
+        const fireAppId = 'body-track-3ff2b';
+        
+        // RUTA COMPARTIDA (Ricardo & Esposa)
+        const sharedPath = db.collection('artifacts').doc(fireAppId).collection('public').doc('data');
+        const clientsRef = sharedPath.collection('clients');
+
         let user, selClient;
 
-        // --- LÓGICA DE TABLAS (Basada en tus fotos) ---
+        // DIAGNÓSTICOS (Tablas Ricardo)
         function getIMC(w, h) {
             const val = (w / ((h/100) * (h/100))).toFixed(1);
-            if (val < 18.5) return { val, l: 'Bajo Peso', c: 'text-blue-500' };
-            if (val < 25) return { val, l: 'Normal', c: 'text-emerald-500' };
-            if (val < 30) return { val, l: 'Sobrepeso', c: 'text-yellow-500' };
-            return { val, l: 'Obesidad', c: 'text-red-500' };
+            if (val < 18.5) return { val, l: 'Bajo Peso', c: 'text-blue-500', bg: 'bg-blue-50' };
+            if (val < 25) return { val, l: 'Ideal', c: 'text-emerald-600', bg: 'bg-emerald-50' };
+            if (val < 30) return { val, l: 'Sobrepeso', c: 'text-orange-500', bg: 'bg-orange-50' };
+            return { val, l: 'Obesidad', c: 'text-rose-600', bg: 'bg-rose-50' };
         }
 
         function getGrasa(v, e, g) {
             const isM = g === 'Masculino';
             if (e < 30) {
                 if (isM) {
-                    if (v <= 11) return { l: 'Fitness', c: 'text-emerald-500' };
-                    if (v <= 18) return { l: 'Aceptable', c: 'text-green-500' };
-                    return { l: 'Alto', c: 'text-red-500' };
+                    if (v <= 11) return { l: 'Fitness', c: 'text-emerald-600' };
+                    if (v <= 18) return { l: 'Normal', c: 'text-emerald-600' };
+                    return { l: 'Alta', c: 'text-rose-500' };
                 } else {
-                    if (v <= 14) return { l: 'Fitness', c: 'text-emerald-500' };
-                    if (v <= 21) return { l: 'Aceptable', c: 'text-green-500' };
-                    return { l: 'Alto', c: 'text-red-500' };
+                    if (v <= 14) return { l: 'Fitness', c: 'text-emerald-600' };
+                    if (v <= 21) return { l: 'Normal', c: 'text-emerald-600' };
+                    return { l: 'Alta', c: 'text-rose-500' };
                 }
             } else {
                 if (isM) {
-                    if (v <= 13) return { l: 'Atleta', c: 'text-emerald-500' };
-                    if (v <= 23) return { l: 'Aceptable', c: 'text-green-500' };
-                    return { l: 'Alto', c: 'text-red-500' };
+                    if (v <= 13) return { l: 'Excelente', c: 'text-emerald-600' };
+                    if (v <= 23) return { l: 'Normal', c: 'text-emerald-600' };
+                    return { l: 'Alta', c: 'text-rose-500' };
                 } else {
-                    if (v <= 16) return { l: 'Atleta', c: 'text-emerald-500' };
-                    if (v <= 26) return { l: 'Aceptable', c: 'text-green-500' };
-                    return { l: 'Alto', c: 'text-red-500' };
+                    if (v <= 16) return { l: 'Excelente', c: 'text-emerald-600' };
+                    if (v <= 26) return { l: 'Normal', c: 'text-emerald-600' };
+                    return { l: 'Alta', c: 'text-rose-500' };
                 }
             }
         }
 
         function getVisc(v) {
-            if (v <= 9) return { l: 'Normal', c: 'text-emerald-500' };
-            if (v <= 14) return { l: 'Alto', c: 'text-orange-500' };
-            return { l: 'Muy Alto', c: 'text-red-600' };
+            if (v <= 9) return { l: 'Saludable', c: 'text-emerald-600' };
+            if (v <= 14) return { l: 'Nivel Alto', c: 'text-orange-500' };
+            return { l: 'Riesgoso', c: 'text-rose-600' };
         }
 
         function getMusc(v, e, g) {
             const threshold = (g === 'Masculino') ? (e <= 39 ? 33.3 : 33.1) : (e <= 39 ? 24.3 : 24.1);
-            return (v < threshold) ? { l: 'Bajo', c: 'text-red-400' } : { l: 'Normal/Alto', c: 'text-emerald-500' };
+            return (v < threshold) ? { l: 'Bajo', c: 'text-orange-500' } : { l: 'Fuerte', c: 'text-emerald-600' };
         }
 
-        // --- FUNCIONES ---
+        // ACCIONES
         function irA(id) {
             document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
             document.getElementById(id).classList.add('activa');
@@ -184,36 +227,49 @@
             firebase.auth().signInAnonymously().then(res => {
                 user = res.user;
                 document.getElementById('loader').classList.add('opacity-0');
-                document.getElementById('app').classList.replace('opacity-0', 'opacity-100');
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
-                lucide.createIcons();
+                document.getElementById('app').classList.add('opacity-100');
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    lucide.createIcons();
+                }, 500);
                 listarRecientes();
-            }).catch(e => {
-                const err = document.getElementById('msg-error');
-                err.innerText = "ACTIVA 'AUTHENTICATION ANÓNIMO' EN FIREBASE";
-                err.classList.remove('hidden');
-            });
+            }).catch(e => alert("Error de red. Revisa tu conexión."));
         };
 
         async function listarRecientes() {
-            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').limit(3).get();
+            const snap = await clientsRef.orderBy('date', 'desc').limit(3).get();
             const rec = document.getElementById('recientes');
             rec.innerHTML = '';
-            snap.forEach(doc => rec.innerHTML += `<div class="p-3 bg-slate-50 rounded-xl flex justify-between uppercase">${doc.data().name} <i data-lucide="check" class="text-green-500" size="14"></i></div>`);
-            if(snap.empty) rec.innerHTML = 'Sin registros.';
-            lucide.createIcons();
+            snap.forEach(doc => {
+                const c = doc.data();
+                rec.innerHTML += `
+                    <div class="p-4 bg-emerald-50/50 rounded-2xl flex justify-between items-center border border-emerald-100/50">
+                        <span class="font-bold text-emerald-900 text-[11px] uppercase">${c.name}</span>
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    </div>
+                `;
+            });
+            if(snap.empty) rec.innerHTML = '<p class="text-center text-slate-300 py-2 text-xs">Sin actividad reciente.</p>';
         }
 
         async function listarClientes() {
             const cont = document.getElementById('lista-clientes');
-            cont.innerHTML = '<div class="text-center py-10 opacity-20 font-black">BUSCANDO...</div>';
-            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').get();
+            cont.innerHTML = '<div class="text-center py-10 text-emerald-600 animate-pulse font-bold text-xs uppercase">Buscando socios...</div>';
+            const snap = await clientsRef.orderBy('name').get();
             cont.innerHTML = '';
             snap.forEach(doc => {
                 const c = doc.data();
                 const d = document.createElement('div');
-                d.className = "p-5 bg-white rounded-3xl border border-slate-200 flex justify-between items-center active:scale-95 transition cursor-pointer";
-                d.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 bg-slate-900 text-yellow-500 rounded-xl flex items-center justify-center font-black italic">${c.name.charAt(0)}</div><div><h3 class="font-bold">${c.name}</h3><p class="text-[9px] text-slate-400 font-bold uppercase">${c.gender} • ${c.age} años</p></div></div><i data-lucide="chevron-right" class="text-slate-200"></i>`;
+                d.className = "p-5 bg-white rounded-[2rem] border border-emerald-50 flex justify-between items-center shadow-sm active:scale-95 transition cursor-pointer";
+                d.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold italic">${c.name.charAt(0)}</div>
+                        <div>
+                            <h3 class="font-bold text-slate-700">${c.name}</h3>
+                            <p class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">${c.gender} • ${c.age} años</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-emerald-100"></i>`;
                 d.onclick = () => { selClient = {id: doc.id, ...c}; abrirHistorial(); };
                 cont.appendChild(d);
             });
@@ -223,10 +279,10 @@
         async function abrirHistorial() {
             irA('view-history');
             document.getElementById('h-nombre').innerText = selClient.name;
-            document.getElementById('h-edad').innerText = `${selClient.age} años • ${selClient.gender}`;
+            document.getElementById('h-info').innerText = `${selClient.age} AÑOS • ${selClient.gender}`;
             const hList = document.getElementById('h-lista');
-            hList.innerHTML = '<div class="text-center py-10 opacity-20">Cargando...</div>';
-            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('evals').orderBy('date', 'desc').get();
+            hList.innerHTML = '<div class="text-center py-10 opacity-30 text-xs">Abriendo expediente...</div>';
+            const snap = await clientsRef.doc(selClient.id).collection('evals').orderBy('date', 'desc').get();
             hList.innerHTML = '';
             snap.forEach(doc => {
                 const r = doc.data();
@@ -236,48 +292,28 @@
                 const vs = getVisc(r.visceral);
                 
                 const div = document.createElement('div');
-                div.className = "bg-white p-6 rounded-[2.5rem] border border-slate-200 space-y-4";
+                div.className = "card-wellness p-6 space-y-4 overflow-hidden relative";
                 div.innerHTML = `
-                    <div class="flex justify-between border-b pb-3 font-black text-[10px] text-slate-400 uppercase">
-                        <span>${new Date(r.date).toLocaleDateString()}</span>
-                        <span class="text-slate-900 bg-yellow-400 px-3 py-0.5 rounded-full">${r.weight} kg</span>
+                    <div class="flex justify-between border-b border-emerald-50 pb-3 items-center">
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">${new Date(r.date).toLocaleDateString('es-MX')}</span>
+                        <span class="text-emerald-700 bg-emerald-50 px-4 py-1 rounded-full text-xs font-extrabold">${r.weight} kg</span>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">IMC</p><p class="text-sm font-black">${imc.val}</p><p class="text-[8px] font-bold ${imc.c} uppercase">${imc.l}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Grasa</p><p class="text-sm font-black">${r.fat}%</p><p class="text-[8px] font-bold ${gr.c} uppercase">${gr.l}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Músculo</p><p class="text-sm font-black">${r.muscle}%</p><p class="text-[8px] font-bold ${ms.c} uppercase">${ms.l}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Visceral</p><p class="text-sm font-black">${r.visceral}</p><p class="text-[8px] font-bold ${vs.c} uppercase">${vs.l}</p></div>
-                    </div>
-                `;
-                hList.appendChild(div);
-            });
-            if(snap.empty) hList.innerHTML = '<div class="text-center py-20 opacity-20 font-black uppercase text-xs">Sin registros aún</div>';
-            lucide.createIcons();
-        }
-
-        async function crearCliente(e) {
-            e.preventDefault();
-            await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').add({
-                name: document.getElementById('in-name').value,
-                age: parseInt(document.getElementById('in-age').value),
-                gender: document.getElementById('in-gender').value,
-                date: new Date().toISOString()
-            });
-            irA('view-clients');
-        }
-
-        async function guardarEval(e) {
-            e.preventDefault();
-            await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('evals').add({
-                weight: parseFloat(document.getElementById('ev-w').value),
-                height: parseFloat(document.getElementById('ev-h').value),
-                fat: parseFloat(document.getElementById('ev-f').value),
-                muscle: parseFloat(document.getElementById('ev-m').value),
-                visceral: parseInt(document.getElementById('ev-v').value),
-                date: new Date().toISOString()
-            });
-            abrirHistorial();
-        }
-    </script>
-</body>
-</html>
+                        <div class="p-3 ${imc.bg} rounded-2xl text-center">
+                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">IMC</p>
+                            <p class="text-sm font-extrabold text-slate-700 leading-none">${imc.val}</p>
+                            <p class="text-[8px] font-bold ${imc.c} uppercase mt-1">${imc.l}</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">GRASA %</p>
+                            <p class="text-sm font-extrabold text-slate-700 leading-none">${r.fat}%</p>
+                            <p class="text-[8px] font-bold ${gr.c} uppercase mt-1">${gr.l}</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">MÚSCULO %</p>
+                            <p class="text-sm font-extrabold text-slate-700 leading-none">${r.muscle}%</p>
+                            <p class="text-[8px] font-bold ${ms.c} uppercase mt-1">${ms.l}</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
+                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">VISCERAL</p>
+                            <p class="
