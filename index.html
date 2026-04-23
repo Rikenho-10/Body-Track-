@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>NutriTrack | Club de Bienestar 🌿</title>
+    <title>NutriTrack | Reporte Profesional 🌿</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     
@@ -21,12 +21,15 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
         
+        /* Configuración de Impresión */
         @media print {
-            body { background: white; padding-bottom: 0; }
+            @page { size: portrait; margin: 1cm; }
+            body { background: white !important; padding: 0; }
             nav, button, #loader, .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .card-shadow { box-shadow: none; border: 1px solid #eee; margin-bottom: 15px; }
-            main { max-width: 100%; }
+            .card-shadow { box-shadow: none !important; border: 1px solid #e2e8f0 !important; page-break-inside: avoid; }
+            main { max-width: 100% !important; margin: 0 !important; }
+            .text-emerald-600 { color: #059669 !important; }
         }
     </style>
 </head>
@@ -67,17 +70,17 @@
         <section id="view-list" class="vista p-4 space-y-4">
             <div class="flex items-center gap-4">
                 <button onclick="irA('view-home')" class="p-2 bg-white rounded-xl border border-emerald-100 shadow-sm"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase">Socios</h2>
+                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase">Socios Registrados</h2>
             </div>
             <div id="cont-clientes" class="space-y-3"></div>
         </section>
 
-        <!-- REGISTRO -->
+        <!-- ALTA DE SOCIO -->
         <section id="view-new" class="vista p-4 space-y-4">
             <button onclick="irA('view-home')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center text-center">Alta de Socio</h2>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Registro de Miembro</h2>
             <form onsubmit="registrarSocio(event)" class="bg-white p-8 rounded-[2.5rem] border border-emerald-100 space-y-5 card-shadow">
-                <input id="reg-nom" required placeholder="Nombre Completo" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold outline-none">
+                <input id="reg-nom" required placeholder="Nombre del Socio" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold outline-none">
                 <div class="grid grid-cols-2 gap-4">
                     <input id="reg-eda" required type="number" placeholder="Edad" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold">
                     <select id="reg-sex" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold text-slate-500">
@@ -85,52 +88,60 @@
                         <option value="Femenino">Femenino</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-100">Guardar Registro</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-100">Guardar Socio</button>
             </form>
         </section>
 
-        <!-- EXPEDIENTE -->
+        <!-- EXPEDIENTE DE EVOLUCIÓN -->
         <section id="view-history" class="vista p-4 space-y-6">
             <div class="flex items-center justify-between px-2 no-print">
                 <button onclick="irA('view-list')" class="p-2 bg-white rounded-xl border border-emerald-100"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
                 <div class="text-center">
                     <h2 id="hist-nom" class="font-extrabold text-emerald-900 leading-none">Socio</h2>
-                    <span id="hist-meta" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-1 block">Expediente Corporal</span>
+                    <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-1 block">Expediente de Salud</span>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-emerald-100 text-emerald-600 p-3 rounded-2xl border border-emerald-200"><i data-lucide="printer" size="20"></i></button>
-                    <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg active:scale-90 transition"><i data-lucide="plus" size="20"></i></button>
+                    <button onclick="window.print()" class="bg-white text-emerald-600 p-3 rounded-2xl border border-emerald-100 shadow-sm hover:bg-emerald-50 transition-colors">
+                        <i data-lucide="printer" size="20"></i>
+                    </button>
+                    <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg active:scale-90 transition">
+                        <i data-lucide="plus" size="20"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="hidden print-only text-center mb-6 border-b-2 border-emerald-500 pb-4">
-                <h1 class="text-2xl font-black text-emerald-800 uppercase italic">Nutri-Track Reporte 🌿</h1>
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-[0.2em] mt-1">Club de Bienestar y Nutrición</p>
+            <!-- Título exclusivo para impresión -->
+            <div class="hidden print-only text-center mb-8 border-b-4 border-emerald-500 pb-6">
+                <h1 class="text-3xl font-black text-emerald-800 uppercase italic">REPORTE DE BIENESTAR 🌿</h1>
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-[0.3em] mt-2">Seguimiento de Composición Corporal</p>
+                <div id="print-client-header" class="mt-4 text-sm font-bold text-slate-700"></div>
             </div>
 
-            <div id="hist-lista" class="space-y-5"></div>
+            <div id="hist-lista" class="space-y-6"></div>
         </section>
 
-        <!-- EVALUACIÓN -->
+        <!-- NUEVA EVALUACIÓN -->
         <section id="view-eval" class="vista p-4 space-y-6">
             <button onclick="irA('view-history')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nueva Evaluación</h2>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nueva Medición</h2>
             <form onsubmit="guardarEval(event)" class="bg-white p-8 rounded-[3rem] border border-emerald-100 space-y-4 card-shadow">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">Peso (kg)</label><input id="ev-p" required type="number" step="0.1" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">Talla (cm)</label><input id="ev-t" required type="number" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">% Grasa</label><input id="ev-g" required type="number" step="0.1" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">Metabolismo</label><input id="ev-met" required type="number" placeholder="kcal" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">Cintura (cm)</label><input id="ev-cin" required type="number" step="0.1" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
-                    <div><label class="text-[8px] font-black text-emerald-600 ml-2 uppercase block">Edad Bio.</label><input id="ev-bio" required type="number" class="w-full p-3 bg-emerald-50/30 rounded-xl outline-none font-bold"></div>
+                    <div class="col-span-2">
+                        <label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Talla (cm)</label>
+                        <input id="ev-t" required type="number" placeholder="Ej. 170" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold">
+                    </div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Peso (kg)</label><input id="ev-p" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">% Grasa (GC)</label><input id="ev-g" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">% Músculo (MM)</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Metabolismo (MB)</label><input id="ev-met" required type="number" placeholder="kcal" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Edad Biológica</label><input id="ev-bio" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white p-4 rounded-2xl font-bold uppercase tracking-widest shadow-xl mt-2">Guardar Evaluación</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase tracking-widest shadow-xl mt-4">Guardar y Diagnosticar</button>
             </form>
         </section>
 
-        <!-- NAV -->
+        <!-- NAVEGACIÓN -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass border border-emerald-100 px-8 py-5 flex justify-between rounded-[2.5rem] shadow-2xl z-50 no-print">
             <button onclick="irA('view-home')"><i data-lucide="home" class="text-slate-400"></i></button>
             <button onclick="irA('view-list')"><i data-lucide="clipboard-list" class="text-slate-400"></i></button>
@@ -149,7 +160,7 @@
         };
         firebase.initializeApp(config);
         const db = firebase.firestore();
-        const baseRef = db.collection('artifacts').doc('body-track-3ff2b').collection('public').doc('data').collection('clients');
+        const clientsRef = db.collection('artifacts').doc('body-track-3ff2b').collection('public').doc('data').collection('clients');
 
         let selId = null, selData = null;
 
@@ -198,7 +209,7 @@
 
         async function registrarSocio(e) {
             e.preventDefault();
-            await baseRef.add({
+            await clientsRef.add({
                 name: document.getElementById('reg-nom').value,
                 age: parseInt(document.getElementById('reg-eda').value),
                 gender: document.getElementById('reg-sex').value,
@@ -211,7 +222,7 @@
         async function renderLista() {
             const cont = document.getElementById('cont-clientes');
             cont.innerHTML = '<div class="text-center py-10 text-emerald-500 animate-pulse font-bold text-xs uppercase">Conectando...</div>';
-            const snap = await baseRef.orderBy('name').get();
+            const snap = await clientsRef.orderBy('name').get();
             cont.innerHTML = '';
             snap.forEach(doc => {
                 const c = doc.data();
@@ -235,10 +246,14 @@
         async function renderHistorial() {
             irA('view-history');
             document.getElementById('hist-nom').innerText = selData.name;
+            document.getElementById('print-client-header').innerText = `SOCIO: ${selData.name.toUpperCase()} | EDAD: ${selData.age} | SEXO: ${selData.gender.toUpperCase()}`;
+            
             const lista = document.getElementById('hist-lista');
-            lista.innerHTML = '<p class="text-center py-10 text-xs opacity-30 italic text-emerald-600">Abriendo expediente...</p>';
-            const snap = await baseRef.doc(selId).collection('evals').orderBy('date', 'desc').get();
+            lista.innerHTML = '<p class="text-center py-10 text-xs opacity-30 italic text-emerald-600 uppercase font-black">Abriendo expediente compartido...</p>';
+            
+            const snap = await clientsRef.doc(selId).collection('evals').orderBy('date', 'desc').get();
             lista.innerHTML = '';
+            
             snap.forEach(doc => {
                 const r = doc.data();
                 const imc = (r.weight / ((r.height/100)*(r.height/100))).toFixed(1);
@@ -249,43 +264,39 @@
                 div.className = "bg-white p-6 rounded-[2.5rem] border border-emerald-50 card-shadow space-y-4";
                 div.innerHTML = `
                     <div class="flex justify-between border-b border-emerald-50 pb-3 items-center">
-                        <span class="text-[9px] font-bold text-emerald-300 uppercase tracking-widest">${new Date(r.date).toLocaleDateString()}</span>
-                        <span class="text-emerald-700 font-extrabold bg-emerald-50 px-4 py-1 rounded-full text-xs">${r.weight} KG</span>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="calendar" size="14" class="text-emerald-400 no-print"></i>
+                            <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">${new Date(r.date).toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'})}</span>
+                        </div>
+                        <div class="text-right">
+                             <span class="text-emerald-700 font-black bg-emerald-50 px-4 py-1.5 rounded-full text-sm">${r.weight} KG</span>
+                             <p class="text-[8px] font-bold text-slate-400 uppercase mt-1 print-only">Peso Actual</p>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3 text-center">
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">IMC</p><p class="text-xs font-black text-slate-700 leading-none">${imc}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">GRASA</p><p class="text-xs font-black text-slate-700 leading-none">${r.fat}%</p><p class="text-[7px] font-bold ${gStat.c} uppercase mt-1">${gStat.l}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">MÚSCULO</p><p class="text-xs font-black text-slate-700 leading-none">${r.muscle}%</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">VISCERAL</p><p class="text-xs font-black text-slate-700 leading-none">${r.visceral}</p><p class="text-[7px] font-bold ${vStat.c} uppercase mt-1">${vStat.l}</p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">METABOLISMO</p><p class="text-xs font-black text-slate-700 leading-none">${r.metabolism || '-'} <small class="text-[8px]">kcal</small></p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl"><p class="text-[7px] font-black text-slate-400 uppercase">EDAD BIO.</p><p class="text-xs font-black text-slate-700 leading-none">${r.bioAge || '-'} <small class="text-[8px]">años</small></p></div>
-                        <div class="p-3 bg-slate-50 rounded-2xl col-span-2"><p class="text-[7px] font-black text-slate-400 uppercase">CINTURA</p><p class="text-xs font-black text-slate-700 leading-none">${r.waist || '-'} <small class="text-[8px]">cm</small></p></div>
-                    </div>`;
-                lista.appendChild(div);
-            });
-            if(snap.empty) lista.innerHTML = '<p class="text-center py-20 text-xs font-bold text-emerald-200 uppercase tracking-widest italic">Sin mediciones</p>';
-            lucide.createIcons();
-        }
-
-        async function guardarEval(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true; btn.innerText = 'PROCESANDO...';
-            await baseRef.doc(selId).collection('evals').add({
-                weight: parseFloat(document.getElementById('ev-p').value),
-                height: parseFloat(document.getElementById('ev-t').value),
-                fat: parseFloat(document.getElementById('ev-g').value),
-                muscle: parseFloat(document.getElementById('ev-m').value),
-                visceral: parseInt(document.getElementById('ev-v').value),
-                metabolism: parseInt(document.getElementById('ev-met').value),
-                waist: parseFloat(document.getElementById('ev-cin').value),
-                bioAge: parseInt(document.getElementById('ev-bio').value),
-                date: new Date().toISOString()
-            });
-            btn.disabled = false; btn.innerText = 'GUARDAR EVALUACIÓN';
-            e.target.reset();
-            renderHistorial();
-        }
-    </script>
-</body>
-</html>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">IMC</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${imc}</p>
+                            <p class="text-[7px] font-bold text-emerald-500 mt-1 uppercase">Índice Masa</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">% GC (Grasa)</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${r.fat}%</p>
+                            <p class="text-[7px] font-bold ${gStat.c} uppercase mt-1">${gStat.l}</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">% MM (Músculo)</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${r.muscle}%</p>
+                            <p class="text-[7px] font-bold text-emerald-500 mt-1 uppercase">Masa Musc.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">MB (Metab.)</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${r.metabolism || '-'}</p>
+                            <p class="text-[7px] font-bold text-orange-400 mt-1 uppercase">kcal/día</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Edad Bio.</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${r.bioAge || '-'}</p>
+                            <p class="text-[7px] font-bold text-indigo-400 mt-1 uppercase">Años</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 ro
