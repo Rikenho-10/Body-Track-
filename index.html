@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>NutriTrack | Reporte Profesional 🌿</title>
+    <title>NutriTrack | Club de Bienestar 🌿</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK Estable -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -21,16 +21,13 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
         
-        /* Configuración de Impresión */
         @media print {
             @page { size: portrait; margin: 0.5cm; }
             body { background: white !important; padding: 0 !important; }
-            nav, button, #loader, .no-print, .btn-ev-plus { display: none !important; }
+            nav, button, #loader, .no-print { display: none !important; }
             .print-only { display: block !important; }
             .card-shadow { box-shadow: none !important; border: 1px solid #e2e8f0 !important; page-break-inside: avoid; margin-bottom: 20px !important; }
             main { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-            .text-emerald-600 { color: #059669 !important; }
-            .bg-emerald-50 { background-color: #f0fdf4 !important; border: 1px solid #dcfce7 !important; }
         }
     </style>
 </head>
@@ -45,24 +42,24 @@
 
     <main id="app-ui" class="max-w-md mx-auto hidden">
         
-        <!-- INICIO -->
+        <!-- DASHBOARD -->
         <section id="view-home" class="vista activa p-4 space-y-6">
             <header class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                 <div class="relative z-10">
-                    <h1 class="text-2xl font-extrabold italic text-white">¡Hola Club! 👋</h1>
+                    <h1 class="text-2xl font-extrabold italic">¡Hola Club! 👋</h1>
                     <p class="text-emerald-100 text-xs mt-1">Bienvenidos a su espacio de bienestar</p>
                 </div>
-                <i data-lucide="leaf" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12"></i>
+                <i data-lucide="leaf" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12 text-white"></i>
             </header>
 
             <div class="grid grid-cols-2 gap-4">
                 <button onclick="irA('view-list')" class="p-6 bg-white rounded-[2rem] border border-emerald-100 flex flex-col items-center card-shadow active:scale-95 transition">
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl mb-2"><i data-lucide="users"></i></div>
-                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-wider">Socios</span>
+                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Socios</span>
                 </button>
                 <button onclick="irA('view-new')" class="p-6 bg-white rounded-[2rem] border border-emerald-100 flex flex-col items-center card-shadow active:scale-95 transition">
                     <div class="p-3 bg-orange-50 text-orange-500 rounded-2xl mb-2"><i data-lucide="user-plus"></i></div>
-                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-wider">Nuevo</span>
+                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Nuevo</span>
                 </button>
             </div>
         </section>
@@ -71,7 +68,7 @@
         <section id="view-list" class="vista p-4 space-y-4">
             <div class="flex items-center gap-4">
                 <button onclick="irA('view-home')" class="p-2 bg-white rounded-xl border border-emerald-100 shadow-sm"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase">Directorio</h2>
+                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase tracking-tighter">Directorio</h2>
             </div>
             <div id="cont-clientes" class="space-y-3"></div>
         </section>
@@ -79,7 +76,7 @@
         <!-- REGISTRO -->
         <section id="view-new" class="vista p-4 space-y-4">
             <button onclick="irA('view-home')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Registro de Miembro</h2>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Alta de Socio</h2>
             <form onsubmit="registrarSocio(event)" class="bg-white p-8 rounded-[2.5rem] border border-emerald-100 space-y-5 card-shadow">
                 <input id="reg-nom" required placeholder="Nombre del Socio" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold outline-none">
                 <div class="grid grid-cols-2 gap-4">
@@ -95,30 +92,27 @@
 
         <!-- EXPEDIENTE -->
         <section id="view-history" class="vista p-4 space-y-6">
-            <div class="flex flex-col space-y-4 no-print">
+            <div class="no-print space-y-4">
                 <div class="flex items-center justify-between px-2">
                     <button onclick="irA('view-list')" class="p-2 bg-white rounded-xl border border-emerald-100"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
                     <div class="text-center">
-                        <h2 id="hist-nom" class="font-extrabold text-emerald-900 leading-none text-lg">Socio</h2>
-                        <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-1 block">Expediente de Salud</span>
+                        <h2 id="hist-nom" class="font-extrabold text-emerald-900 leading-none">Socio</h2>
+                        <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-1 block">Expediente Compartido</span>
                     </div>
-                    <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg active:scale-90 transition btn-ev-plus">
+                    <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg active:scale-90 transition">
                         <i data-lucide="plus" size="20"></i>
                     </button>
                 </div>
-                
-                <!-- BOTÓN DE IMPRESIÓN REFORZADO -->
-                <button onclick="window.print()" class="w-full bg-white text-emerald-600 py-4 rounded-2xl border-2 border-emerald-200 shadow-sm font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 active:bg-emerald-50 transition-colors">
+                <!-- BOTÓN IMPRIMIR GRANDE -->
+                <button onclick="window.print()" class="w-full bg-emerald-600 text-white py-4 rounded-2xl shadow-lg font-black uppercase text-xs tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-transform">
                     <i data-lucide="printer" size="18"></i>
-                    Imprimir Reporte
+                    Imprimir Reporte de Salud
                 </button>
             </div>
 
-            <!-- Título exclusivo para impresión -->
             <div class="hidden print-only text-center mb-8 border-b-4 border-emerald-500 pb-6">
                 <h1 class="text-3xl font-black text-emerald-800 uppercase italic">REPORTE DE BIENESTAR 🌿</h1>
-                <p class="text-xs text-slate-500 uppercase font-bold tracking-[0.3em] mt-2 italic">Nutrición y Composición Corporal</p>
-                <div id="print-client-header" class="mt-6 p-4 bg-emerald-50 rounded-2xl text-sm font-black text-emerald-900 border border-emerald-100"></div>
+                <div id="print-header" class="mt-4 p-4 bg-emerald-50 rounded-2xl text-sm font-black text-emerald-900 border border-emerald-100"></div>
             </div>
 
             <div id="hist-lista" class="space-y-6"></div>
@@ -127,21 +121,21 @@
         <!-- EVALUACIÓN -->
         <section id="view-eval" class="vista p-4 space-y-6">
             <button onclick="irA('view-history')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nueva Evaluación</h2>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Medición Corporal</h2>
             <form onsubmit="guardarEval(event)" class="bg-white p-8 rounded-[3rem] border border-emerald-100 space-y-4 card-shadow">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
                         <label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Talla (cm)</label>
-                        <input id="ev-t" required type="number" placeholder="Ej. 175" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold">
+                        <input id="ev-t" required type="number" placeholder="Ej. 170" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold">
                     </div>
                     <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Peso (kg)</label><input id="ev-p" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% Grasa (GC)</label><input id="ev-g" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% Músculo (MM)</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Metabolismo (MB)</label><input id="ev-met" required type="number" placeholder="kcal" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% GC (Grasa)</label><input id="ev-g" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% MM (Músculo)</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Metab. (MB)</label><input id="ev-met" required type="number" placeholder="kcal" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
                     <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
                     <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Edad Bio.</label><input id="ev-bio" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase tracking-widest shadow-xl mt-4">Guardar y Calcular</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase tracking-widest shadow-xl mt-4">Guardar y Diagnosticar</button>
             </form>
         </section>
 
@@ -207,7 +201,7 @@
         }
 
         window.onload = () => {
-            setTimeout(() => { document.getElementById('btn-forzar').classList.remove('hidden'); }, 4000);
+            setTimeout(() => { document.getElementById('btn-forzar').classList.remove('hidden'); }, 3000);
             firebase.auth().signInAnonymously().then(() => { forzarEntrada(); });
         };
 
@@ -225,7 +219,7 @@
 
         async function renderLista() {
             const cont = document.getElementById('cont-clientes');
-            cont.innerHTML = '<div class="text-center py-10 text-emerald-500 animate-pulse font-bold text-xs uppercase">Sincronizando Club...</div>';
+            cont.innerHTML = '<div class="text-center py-10 text-emerald-500 animate-pulse font-bold text-xs uppercase tracking-widest">Sincronizando Club...</div>';
             const snap = await clientsRef.orderBy('name').get();
             cont.innerHTML = '';
             snap.forEach(doc => {
@@ -250,7 +244,7 @@
         async function renderHistorial() {
             irA('view-history');
             document.getElementById('hist-nom').innerText = selData.name;
-            document.getElementById('print-client-header').innerText = `SOCIO: ${selData.name.toUpperCase()} | EDAD: ${selData.age} | SEXO: ${selData.gender.toUpperCase()}`;
+            document.getElementById('print-header').innerText = `SOCIO: ${selData.name.toUpperCase()} | EDAD: ${selData.age} | SEXO: ${selData.gender.toUpperCase()}`;
             
             const lista = document.getElementById('hist-lista');
             lista.innerHTML = '<p class="text-center py-10 text-xs opacity-30 italic text-emerald-600 uppercase font-black">Cargando mediciones...</p>';
@@ -268,9 +262,7 @@
                 div.className = "bg-white p-6 rounded-[2.5rem] border border-emerald-50 card-shadow space-y-4";
                 div.innerHTML = `
                     <div class="flex justify-between border-b border-emerald-50 pb-3 items-center">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">${new Date(r.date).toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'})}</span>
-                        </div>
+                        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">${new Date(r.date).toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'})}</span>
                         <div class="text-right">
                              <span class="text-emerald-700 font-black bg-emerald-50 px-4 py-1.5 rounded-full text-sm">${r.weight} KG</span>
                              <p class="text-[8px] font-bold text-slate-400 uppercase mt-1 print-only">Peso Actual</p>
@@ -297,4 +289,10 @@
                             <p class="text-sm font-black text-slate-700 leading-none">${r.metabolism || '-'}</p>
                             <p class="text-[7px] font-bold text-orange-400 mt-1 uppercase tracking-tighter">kcal/día</p>
                         </div>
-                        <div class
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Edad Bio.</p>
+                            <p class="text-sm font-black text-slate-700 leading-none">${r.bioAge || '-'}</p>
+                            <p class="text-[7px] font-bold text-indigo-400 mt-1 uppercase tracking-tighter">Años</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[8px] font-b
