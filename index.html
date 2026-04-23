@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BodyTrack Pro | Ricardo's Club</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React y Babel para ejecutar el código en el navegador -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Importación dinámica de Firebase desde CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- TUS CREDENCIALES ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZVlrXMmFVaN1SfG4VZq1JLnvbRhzhGDc",
+            authDomain: "body-track-3ff2b.firebaseapp.com",
+            projectId: "body-track-3ff2b",
+            storageBucket: "body-track-3ff2b.firebasestorage.app",
+            messagingSenderId: "147768216670",
+            appId: "1:147768216670:web:d25a81b41a60b99121f8cf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'body-track-3ff2b';
+
+        // Iconos (Simulados para el navegador)
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => { lucide.createIcons(); }, []);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        // Lógica de Diagnóstico (Tablas de Ricardo)
+        const getBodyFatStatus = (value, age, gender) => {
+            const v = parseFloat(value);
+            const isMale = gender === 'Masculino';
+            if (age < 30) {
+                if (isMale) {
+                    if (v < 7) return { label: 'Bajo', color: 'text-blue-500' };
+                    if (v <= 11) return { label: 'Fitness', color: 'text-green-500' };
+                    if (v <= 18) return { label: 'Aceptable', color: 'text-emerald-500' };
+                    if (v <= 21) return { label: 'Sobrepeso M.', color: 'text-yellow-500' };
+                    return { label: 'Obesidad', color: 'text-red-500' };
+                } else {
+                    if (v < 10) return { label: 'Bajo', color: 'text-blue-500' };
+                    if (v <= 14) return { label: 'Fitness', color: 'text-green-500' };
+                    if (v <= 21) return { label: 'Aceptable', color: 'text-emerald-500' };
+                    if (v <= 24) return { label: 'Sobrepeso M.', color: 'text-yellow-500' };
+                    return { label: 'Obesidad', color: 'text-red-500' };
+                }
+            } else {
+                if (isMale) {
+                    if (v < 5) return { label: 'Bajo', color: 'text-blue-500' };
+                    if (v <= 13) return { label: 'Fitness', color: 'text-green-500' };
+                    if (v <= 23) return { label: 'Aceptable', color: 'text-emerald-500' };
+                    if (v <= 26) return { label: 'Sobrepeso M.', color: 'text-yellow-500' };
+                    return { label: 'Obesidad', color: 'text-red-500' };
+                } else {
+                    if (v < 13) return { label: 'Bajo', color: 'text-blue-500' };
+                    if (v <= 16) return { label: 'Fitness', color: 'text-green-500' };
+                    if (v <= 26) return { label: 'Aceptable', color: 'text-emerald-500' };
+                    if (v <= 29) return { label: 'Sobrepeso M.', color: 'text-yellow-500' };
+                    return { label: 'Obesidad', color: 'text-red-500' };
+                }
+            }
+        };
+
+        const getVisceralStatus = (value) => {
+            const v = parseInt(value);
+            if (v <= 9) return { label: 'Normal', color: 'text-emerald-500' };
+            if (v <= 14) return { label: 'Alto', color: 'text-orange-500' };
+            return { label: 'Muy Alto', color: 'text-red-600' };
+        };
+
+        const getMuscleStatus = (value, age, gender) => {
+            const v = parseFloat(value);
+            const isMale = gender === 'Masculino';
+            const threshold = isMale ? (age <= 39 ? 33.3 : 33.1) : (age <= 39 ? 24.3 : 24.1);
+            const highLimit = isMale ? (age <= 39 ? 39.3 : 39.1) : (age <= 39 ? 30.3 : 30.1);
+            
+            if (v < threshold) return { label: 'Bajo', color: 'text-red-400' };
+            if (v <= highLimit) return { label: 'Normal', color: 'text-emerald-500' };
+            return { label: 'Alto', color: 'text-blue-500' };
+        };
+
+        function App() {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('dashboard');
+            const [clients, setClients] = useState([]);
+            const [selectedClient, setSelectedClient] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+
+            useEffect(() => {
+                signInAnonymously(auth);
+                onAuthStateChanged(auth, setUser);
+            }, []);
+
+            useEffect(() => {
+                if (!user) return;
+                const q = collection(db, 'artifacts', appId, 'users', user.uid, 'clients');
+                return onSnapshot(q, (snap) => {
+                    setClients(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                });
+            }, [user]);
+
+            if (!user) return <div className="h-screen flex items-center justify-center bg-slate-900 text-yellow-500 font-bold">CARGANDO... 🎸</div>;
+
+            return (
+                <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 shadow-2xl relative">
+                    {view === 'dashboard' && (
+                        <div className="p-4 space-y-6">
+                            <header className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h1 className="text-2xl font-bold">BodyTrack Pro</h1>
+                                        <p className="text-slate-400 text-[10px] uppercase font-black tracking-widest">Ricardo's Club</p>
+                                    </div>
+                                    <Icon name="activity" className="text-yellow-500" />
+                                </div>
+                            </header>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button onClick={() => setView('clients')} className="p-6 bg-white rounded-3xl border flex flex-col items-center">
+                                    <Icon name="users" className="text-blue-600 mb-2" />
+                                    <span className="font-bold">Clientes</span>
+                                </button>
+                                <button onClick={() => setView('new-client')} className="p-6 bg-white rounded-3xl border flex flex-col items-center">
+                                    <Icon name="user-plus" className="text-green-600 mb-2" />
+                                    <span className="font-bold">Nuevo</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'clients' && (
+                        <div className="p-4 space-y-4">
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setView('dashboard')} className="p-2 bg-white rounded-full"><Icon name="arrow-left" /></button>
+                                <h2 className="text-xl font-bold">Mis Miembros</h2>
+                            </div>
+                            <input placeholder="Buscar..." className="w-full p-4 bg-white border rounded-2xl outline-none" onChange={e => setSearchTerm(e.target.value)} />
+                            <div className="space-y-3">
+                                {clients.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase())).map(c => (
+                                    <div key={c.id} onClick={() => { setSelectedClient(c); setView('history'); }} className="p-4 bg-white rounded-2xl border flex justify-between items-center">
+                                        <div className="font-bold">{c.name}</div>
+                                        <Icon name="chevron-right" className="text-slate-300" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'new-client' && (
+                        <div className="p-4 space-y-4">
+                            <button onClick={() => setView('dashboard')}><Icon name="arrow-left" /></button>
+                            <h2 className="text-xl font-bold">Nuevo Registro</h2>
+                            <form className="space-y-4 bg-white p-6 rounded-3xl border" onSubmit={async (e) => {
+                                e.preventDefault();
+                                const data = new FormData(e.target);
+                                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'clients'), {
+                                    name: data.get('name'), age: data.get('age'), gender: data.get('gender'), createdAt: new Date().toISOString()
+                                });
+                                setView('clients');
+                            }}>
+                                <input name="name" required placeholder="Nombre Completo" className="w-full p-4 bg-slate-50 rounded-xl" />
+                                <input name="age" required type="number" placeholder="Edad" className="w-full p-4 bg-slate-50 rounded-xl" />
+                                <select name="gender" className="w-full p-4 bg-slate-50 rounded-xl">
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                </select>
+                                <button className="w-full bg-slate-900 text-white p-4 rounded-xl font-bold">Guardar</button>
+                            </form>
+                        </div>
+                    )}
+
+                    {view === 'history' && <HistoryView client={selectedClient} user={user} setView={setView} db={db} appId={appId} getBodyFatStatus={getBodyFatStatus} getVisceralStatus={getVisceralStatus} getMuscleStatus={getMuscleStatus} />}
+                    {view === 'assessment' && <AssessmentForm client={selectedClient} user={user} setView={setView} db={db} appId={appId} />}
+
+                    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] bg-white px-8 py-4 flex justify-between rounded-[2.5rem] shadow-2xl border">
+                        <button onClick={() => setView('dashboard')}><Icon name="home" className={view==='dashboard' ? 'text-blue-600' : 'text-slate-400'} /></button>
+                        <button onClick={() => setView('clients')}><Icon name="users" className={view==='clients' ? 'text-blue-600' : 'text-slate-400'} /></button>
+                        <button onClick={() => setView('new-client')}><Icon name="plus-circle" className={view==='new-client' ? 'text-blue-600' : 'text-slate-400'} /></button>
+                    </nav>
+                </div>
+            );
+        }
+
+        const HistoryView = ({ client, user, setView, db, appId, getBodyFatStatus, getVisceralStatus, getMuscleStatus }) => {
+            const [records, setRecords] = useState([]);
+            useEffect(() => {
+                const q = collection(db, 'artifacts', appId, 'users', user.uid, 'clients', client.id, 'assessments');
+                return onSnapshot(q, s => setRecords(s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => new Date(b.date) - new Date(a.date))));
+            }, []);
+
+            return (
+                <div className="p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <button onClick={() => setView('clients')}><Icon name="arrow-left" /></button>
+                        <h2 className="font-bold">{client.name}</h2>
+                        <button onClick={() => setView('assessment')} className="bg-blue-600 text-white p-2 rounded-xl"><Icon name="plus" size={20}/></button>
+                    </div>
+                    {records.map(r => {
+                        const fat = getBodyFatStatus(r.fat, client.age, client.gender);
+                        const visc = getVisceralStatus(r.visceral);
+                        const musc = getMuscleStatus(r.muscle, client.age, client.gender);
+                        return (
+                            <div key={r.id} className="bg-white p-5 rounded-3xl border space-y-3">
+                                <div className="flex justify-between border-b pb-2">
+                                    <span className="text-xs font-bold text-slate-400">{new Date(r.date).toLocaleDateString()}</span>
+                                    <span className="font-black">{r.weight} kg</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 text-center">
+                                    <div className="p-2 bg-slate-50 rounded-xl">
+                                        <p className="text-[8px] font-bold text-slate-400">GRASA</p>
+                                        <p className="text-xs font-black">{r.fat}%</p>
+                                        <p className={`text-[8px] font-bold ${fat.color}`}>{fat.label}</p>
+                                    </div>
+                                    <div className="p-2 bg-slate-50 rounded-xl">
+                                        <p className="text-[8px] font-bold text-slate-400">MÚSCULO</p>
+                                        <p className="text-xs font-black">{r.muscle}%</p>
+                                        <p className={`text-[8px] font-bold ${musc.color}`}>{musc.label}</p>
+                                    </div>
+                                    <div className="p-2 bg-slate-50 rounded-xl">
+                                        <p className="text-[8px] font-bold text-slate-400">VISCERAL</p>
+                                        <p className="text-xs font-black">{r.visceral}</p>
+                                        <p className={`text-[8px] font-bold ${visc.color}`}>{visc.label}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const AssessmentForm = ({ client, user, setView, db, appId }) => {
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const d = new FormData(e.target);
+                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'clients', client.id, 'assessments'), {
+                    weight: d.get('weight'), fat: d.get('fat'), muscle: d.get('muscle'), visceral: d.get('visceral'), date: new Date().toISOString()
+                });
+                setView('history');
+            };
+            return (
+                <div className="p-4 space-y-4">
+                    <button onClick={() => setView('history')}><Icon name="arrow-left" /></button>
+                    <h2 className="text-xl font-bold">Nueva Evaluación</h2>
+                    <form className="bg-white p-6 rounded-3xl border space-y-4" onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-2 gap-4">
+                            <input name="weight" required type="number" step="0.1" placeholder="Peso (kg)" className="p-4 bg-slate-50 rounded-xl" />
+                            <input name="fat" required type="number" step="0.1" placeholder="% Grasa" className="p-4 bg-slate-50 rounded-xl" />
+                            <input name="muscle" required type="number" step="0.1" placeholder="% Músculo" className="p-4 bg-slate-50 rounded-xl" />
+                            <input name="visceral" required type="number" placeholder="G. Visceral" className="p-4 bg-slate-50 rounded-xl" />
+                        </div>
+                        <button className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold">Calcular Diagnóstico</button>
+                    </form>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+```
