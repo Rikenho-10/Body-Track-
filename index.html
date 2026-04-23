@@ -3,138 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BodyTrack Pro | Club Ricardo</title>
-    <!-- Cargando estilos y fuentes rápido -->
+    <title>BodyTrack Pro | Club Ricardo 🦅</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Scripts de Firebase con carga clásica (más estable para GitHub) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
-    <!-- Iconos Lucide -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .vista { display: none; }
-        .vista.activa { display: block; }
+        .vista.activa { display: block; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .rock-shadow { shadow-lg; border: 1px solid rgba(0,0,0,0.05); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-100 text-slate-900 pb-28">
 
-    <!-- Pantalla de Carga Blindada -->
-    <div id="pantalla-carga" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-        <h1 class="text-white font-black tracking-tighter text-2xl italic">BODYTRACK PRO 🎸</h1>
-        <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-2">Cargando base de datos...</p>
-        
-        <!-- Botón de emergencia si se queda colgado -->
-        <button id="btn-emergencia" onclick="inicializarAppManual()" class="hidden mt-10 bg-yellow-500 text-black px-6 py-3 rounded-full font-black text-xs uppercase">Forzar Entrada ⚡</button>
+    <div id="loader" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center transition-all">
+        <div class="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h1 class="text-white font-black italic text-xl">BODYTRACK PRO 🎸</h1>
+        <p id="msg-error" class="text-slate-500 text-[10px] mt-4 uppercase hidden text-center px-10"></p>
     </div>
 
-    <!-- Contenedor de la App -->
-    <main id="main-app" class="max-w-md mx-auto min-h-screen opacity-0 transition-opacity duration-500">
+    <main id="app" class="max-w-md mx-auto min-h-screen opacity-0">
         
-        <!-- INICIO (DASHBOARD) -->
         <section id="view-home" class="vista activa p-4 space-y-6">
             <header class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <h1 class="text-3xl font-black italic tracking-tighter">CLUB RICARDO</h1>
-                    <p class="text-yellow-500 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Body Evaluation System</p>
-                </div>
-                <div class="absolute -right-6 -top-6 opacity-10 rotate-12">
-                    <i data-lucide="activity" style="width: 140px; height: 140px;"></i>
-                </div>
+                <h1 class="text-3xl font-black italic tracking-tighter leading-none relative z-10">CLUB AMÉRICA 🦅</h1>
+                <p class="text-yellow-500 text-[10px] font-black uppercase tracking-widest mt-2 relative z-10">Ricardo's Evaluation System</p>
+                <i data-lucide="activity" class="absolute -right-4 -top-4 opacity-10 w-32 h-32 rotate-12 text-white"></i>
             </header>
 
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="cambiarVista('view-clients')" class="p-8 bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center active:scale-95 transition">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl mb-3"><i data-lucide="users"></i></div>
-                    <span class="font-black text-slate-700 uppercase text-xs tracking-tight">Clientes</span>
+                <button onclick="irA('view-clients')" class="p-8 bg-white rounded-[2rem] border border-slate-200 flex flex-col items-center shadow-sm">
+                    <i data-lucide="users" class="text-blue-600 mb-2"></i>
+                    <span class="font-black text-[10px] uppercase">Directorio</span>
                 </button>
-                <button onclick="cambiarVista('view-add')" class="p-8 bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center active:scale-95 transition">
-                    <div class="p-3 bg-green-50 text-green-600 rounded-2xl mb-3"><i data-lucide="user-plus"></i></div>
-                    <span class="font-black text-slate-700 uppercase text-xs tracking-tight">Nuevo</span>
+                <button onclick="irA('view-add')" class="p-8 bg-white rounded-[2rem] border border-slate-200 flex flex-col items-center shadow-sm">
+                    <i data-lucide="user-plus" class="text-green-600 mb-2"></i>
+                    <span class="font-black text-[10px] uppercase">Nuevo</span>
                 </button>
             </div>
 
-            <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                <div class="flex items-center gap-2 mb-4">
-                    <i data-lucide="trending-up" class="text-indigo-500" size="18"></i>
-                    <h2 class="font-black text-slate-800 uppercase text-xs tracking-widest">Actividad Reciente</h2>
-                </div>
-                <div id="recientes-list" class="space-y-3">
-                    <p class="text-center text-slate-400 text-[10px] py-4 italic uppercase">Actualizando datos...</p>
-                </div>
+            <div class="bg-white p-6 rounded-[2.5rem] border border-slate-200">
+                <h2 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Actividad Reciente</h2>
+                <div id="recientes" class="space-y-3 text-xs font-bold text-slate-500 italic">Cargando...</div>
             </div>
         </section>
 
-        <!-- CLIENTES -->
         <section id="view-clients" class="vista p-4 space-y-4">
-            <div class="flex items-center gap-4 mb-2">
-                <button onclick="cambiarVista('view-home')" class="p-3 bg-white rounded-2xl border shadow-sm"><i data-lucide="arrow-left" size="20"></i></button>
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter">Directorio</h2>
+            <div class="flex items-center gap-4">
+                <button onclick="irA('view-home')" class="p-3 bg-white rounded-2xl border shadow-sm"><i data-lucide="arrow-left" size="20"></i></button>
+                <h2 class="text-2xl font-black italic uppercase">Clientes</h2>
             </div>
             <div id="lista-clientes" class="space-y-3"></div>
         </section>
 
-        <!-- REGISTRO -->
-        <section id="view-add" class="vista p-4 space-y-6">
-            <button onclick="cambiarVista('view-home')"><i data-lucide="arrow-left"></i></button>
-            <h2 class="text-2xl font-black italic uppercase px-2">Nuevo Registro</h2>
-            <form id="form-cliente" class="bg-white p-8 rounded-[3rem] shadow-2xl space-y-5">
-                <input id="in-name" required placeholder="Nombre del Cliente" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold border-none">
+        <section id="view-add" class="vista p-4 space-y-4">
+            <button onclick="irA('view-home')"><i data-lucide="arrow-left"></i></button>
+            <h2 class="text-2xl font-black italic uppercase px-2">Registro</h2>
+            <form onsubmit="crearCliente(event)" class="bg-white p-8 rounded-[3rem] shadow-xl space-y-5">
+                <input id="in-name" required placeholder="Nombre Completo" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold outline-none">
                 <div class="grid grid-cols-2 gap-4">
-                    <input id="in-age" required type="number" placeholder="Edad" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold">
-                    <select id="in-gender" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold">
+                    <input id="in-age" required type="number" placeholder="Edad" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold">
+                    <select id="in-gender" class="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 font-bold">
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-slate-900 text-yellow-500 p-5 rounded-2xl font-black uppercase tracking-widest">Guardar en Club</button>
+                <button type="submit" class="w-full bg-slate-900 text-yellow-500 p-5 rounded-2xl font-black uppercase tracking-widest shadow-lg">Guardar 🎸</button>
             </form>
         </section>
 
-        <!-- HISTORIAL -->
         <section id="view-history" class="vista p-4 space-y-6">
             <div class="flex items-center justify-between">
-                <button onclick="cambiarVista('view-clients')" class="p-2 bg-white rounded-xl border"><i data-lucide="arrow-left"></i></button>
-                <h2 id="hist-client-name" class="font-black uppercase italic text-slate-800">Cliente</h2>
-                <button onclick="cambiarVista('view-assess')" class="bg-blue-600 text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus"></i></button>
+                <button onclick="irA('view-clients')" class="p-2 bg-white rounded-xl border shadow-sm"><i data-lucide="arrow-left"></i></button>
+                <div class="text-center">
+                    <h2 id="h-nombre" class="font-black uppercase italic leading-none">Nombre</h2>
+                    <span id="h-edad" class="text-[9px] font-bold text-slate-400 uppercase">Edad</span>
+                </div>
+                <button onclick="irA('view-eval')" class="bg-blue-600 text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus"></i></button>
             </div>
-            <div id="hist-list" class="space-y-4"></div>
+            <div id="h-lista" class="space-y-4"></div>
         </section>
 
-        <!-- EVALUACION -->
-        <section id="view-assess" class="vista p-4 space-y-6">
-            <button onclick="cambiarVista('view-history')"><i data-lucide="arrow-left"></i></button>
+        <section id="view-eval" class="vista p-4 space-y-6">
+            <button onclick="irA('view-history')"><i data-lucide="arrow-left"></i></button>
             <h2 class="text-2xl font-black italic uppercase">Evaluación</h2>
-            <form id="form-eval" class="bg-white p-8 rounded-[3rem] shadow-2xl space-y-6">
+            <form onsubmit="guardarEval(event)" class="bg-white p-8 rounded-[3rem] shadow-2xl space-y-5">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Peso (kg)</label><input id="ev-w" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Grasa</label><input id="ev-f" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Peso (kg)</label><input id="ev-w" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">Talla (cm)</label><input id="ev-h" required type="number" step="1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Grasa</label><input id="ev-f" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
+                    <div><label class="text-[9px] font-black text-slate-400 uppercase ml-2 mb-1 block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none"></div>
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl">Calcular Diagnóstico</button>
             </form>
         </section>
 
-        <!-- NAV -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] glass border border-slate-100 px-8 py-5 flex justify-between rounded-[2.5rem] shadow-2xl z-50">
-            <button onclick="cambiarVista('view-home')"><i data-lucide="home"></i></button>
-            <button onclick="cambiarVista('view-clients')"><i data-lucide="users"></i></button>
-            <button onclick="cambiarVista('view-add')"><i data-lucide="plus-circle"></i></button>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] glass border border-slate-200 px-8 py-5 flex justify-between rounded-[2.5rem] shadow-2xl z-50">
+            <button onclick="irA('view-home')" class="text-slate-400 hover:text-blue-600"><i data-lucide="home"></i></button>
+            <button onclick="irA('view-clients')" class="text-slate-400 hover:text-blue-600"><i data-lucide="users"></i></button>
+            <button onclick="irA('view-add')" class="text-slate-400 hover:text-blue-600"><i data-lucide="plus-circle"></i></button>
         </nav>
     </main>
 
     <script>
-        // --- DATA DE RICARDO ---
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyCZVlrXMmFVaN1SfG4VZq1JLnvbRhzhGDc",
             authDomain: "body-track-3ff2b.firebaseapp.com",
             projectId: "body-track-3ff2b",
@@ -142,155 +121,141 @@
             messagingSenderId: "147768216670",
             appId: "1:147768216670:web:d25a81b41a60b99121f8cf"
         };
-
-        let db, user, selClient;
+        firebase.initializeApp(config);
+        const db = firebase.firestore();
         const appId = 'body-track-3ff2b';
+        let user, selClient;
 
-        // Timer de emergencia
-        setTimeout(() => {
-            const btn = document.getElementById('btn-emergencia');
-            if (btn) btn.classList.remove('hidden');
-        }, 5000);
-
-        function inicializarAppManual() {
-            window.location.reload();
+        // --- LÓGICA DE TABLAS (Basada en tus fotos) ---
+        function getIMC(w, h) {
+            const val = (w / ((h/100) * (h/100))).toFixed(1);
+            if (val < 18.5) return { val, l: 'Bajo Peso', c: 'text-blue-500' };
+            if (val < 25) return { val, l: 'Normal', c: 'text-emerald-500' };
+            if (val < 30) return { val, l: 'Sobrepeso', c: 'text-yellow-500' };
+            return { val, l: 'Obesidad', c: 'text-red-500' };
         }
 
-        // --- LÓGICA DE TABLAS ---
-        function getGrasaStatus(v, e, g) {
+        function getGrasa(v, e, g) {
             const isM = g === 'Masculino';
             if (e < 30) {
                 if (isM) {
-                    if (v < 7) return { l: 'Bajo', c: 'text-blue-500' };
-                    if (v <= 11) return { l: 'Fitness', c: 'text-green-500' };
-                    if (v <= 18) return { l: 'Aceptable', c: 'text-emerald-500' };
-                    return { l: 'Sobrepeso/Ob.', c: 'text-red-500' };
+                    if (v <= 11) return { l: 'Fitness', c: 'text-emerald-500' };
+                    if (v <= 18) return { l: 'Aceptable', c: 'text-green-500' };
+                    return { l: 'Alto', c: 'text-red-500' };
                 } else {
-                    if (v < 10) return { l: 'Bajo', c: 'text-blue-500' };
-                    if (v <= 14) return { l: 'Fitness', c: 'text-green-500' };
-                    if (v <= 21) return { l: 'Aceptable', c: 'text-emerald-500' };
-                    return { l: 'Sobrepeso/Ob.', c: 'text-red-500' };
+                    if (v <= 14) return { l: 'Fitness', c: 'text-emerald-500' };
+                    if (v <= 21) return { l: 'Aceptable', c: 'text-green-500' };
+                    return { l: 'Alto', c: 'text-red-500' };
                 }
             } else {
                 if (isM) {
-                    if (v < 5) return { l: 'Bajo', c: 'text-blue-500' };
-                    if (v <= 13) return { l: 'Fitness', c: 'text-green-500' };
-                    if (v <= 23) return { l: 'Aceptable', c: 'text-emerald-500' };
-                    return { l: 'Sobrepeso/Ob.', c: 'text-red-500' };
+                    if (v <= 13) return { l: 'Atleta', c: 'text-emerald-500' };
+                    if (v <= 23) return { l: 'Aceptable', c: 'text-green-500' };
+                    return { l: 'Alto', c: 'text-red-500' };
                 } else {
-                    if (v < 13) return { l: 'Bajo', c: 'text-blue-500' };
-                    if (v <= 16) return { l: 'Fitness', c: 'text-green-500' };
-                    if (v <= 26) return { l: 'Aceptable', c: 'text-emerald-500' };
-                    return { l: 'Sobrepeso/Ob.', c: 'text-red-500' };
+                    if (v <= 16) return { l: 'Atleta', c: 'text-emerald-500' };
+                    if (v <= 26) return { l: 'Aceptable', c: 'text-green-500' };
+                    return { l: 'Alto', c: 'text-red-500' };
                 }
             }
         }
 
-        function getViscStatus(v) {
+        function getVisc(v) {
             if (v <= 9) return { l: 'Normal', c: 'text-emerald-500' };
             if (v <= 14) return { l: 'Alto', c: 'text-orange-500' };
             return { l: 'Muy Alto', c: 'text-red-600' };
         }
 
-        function getMuscStatus(v, e, g) {
-            const isM = g === 'Masculino';
-            const umbral = isM ? (e <= 39 ? 33.3 : 33.1) : (e <= 39 ? 24.3 : 24.1);
-            if (v < umbral) return { l: 'Bajo', c: 'text-red-400' };
-            return { l: 'Normal/Alto', c: 'text-emerald-500' };
+        function getMusc(v, e, g) {
+            const threshold = (g === 'Masculino') ? (e <= 39 ? 33.3 : 33.1) : (e <= 39 ? 24.3 : 24.1);
+            return (v < threshold) ? { l: 'Bajo', c: 'text-red-400' } : { l: 'Normal/Alto', c: 'text-emerald-500' };
         }
 
-        // --- NAVEGACION ---
-        function cambiarVista(id) {
+        // --- FUNCIONES ---
+        function irA(id) {
             document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
             document.getElementById(id).classList.add('activa');
+            if(id === 'view-clients') listarClientes();
+            if(id === 'view-home') listarRecientes();
             window.scrollTo(0,0);
-            if (id === 'view-clients') renderClientes();
         }
 
-        // --- CORE ---
-        window.addEventListener('DOMContentLoaded', () => {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            
+        window.onload = () => {
             firebase.auth().signInAnonymously().then(res => {
                 user = res.user;
-                document.getElementById('pantalla-carga').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('pantalla-carga').style.display = 'none';
-                    document.getElementById('main-app').style.opacity = '1';
-                }, 500);
+                document.getElementById('loader').classList.add('opacity-0');
+                document.getElementById('app').classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
                 lucide.createIcons();
-                cargarRecientes();
-            }).catch(err => {
-                alert("Error de conexión. Revisa tus datos de Firebase.");
+                listarRecientes();
+            }).catch(e => {
+                const err = document.getElementById('msg-error');
+                err.innerText = "ACTIVA 'AUTHENTICATION ANÓNIMO' EN FIREBASE";
+                err.classList.remove('hidden');
             });
-        });
+        };
 
-        async function renderClientes() {
-            const list = document.getElementById('lista-clientes');
-            list.innerHTML = '<p class="text-center py-10 opacity-50 uppercase text-[10px] font-bold">Cargando Directorio...</p>';
+        async function listarRecientes() {
+            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').limit(3).get();
+            const rec = document.getElementById('recientes');
+            rec.innerHTML = '';
+            snap.forEach(doc => rec.innerHTML += `<div class="p-3 bg-slate-50 rounded-xl flex justify-between uppercase">${doc.data().name} <i data-lucide="check" class="text-green-500" size="14"></i></div>`);
+            if(snap.empty) rec.innerHTML = 'Sin registros.';
+            lucide.createIcons();
+        }
+
+        async function listarClientes() {
+            const cont = document.getElementById('lista-clientes');
+            cont.innerHTML = '<div class="text-center py-10 opacity-20 font-black">BUSCANDO...</div>';
             const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').get();
-            list.innerHTML = '';
+            cont.innerHTML = '';
             snap.forEach(doc => {
                 const c = doc.data();
                 const d = document.createElement('div');
-                d.className = "p-5 bg-white rounded-3xl border border-slate-100 flex justify-between items-center shadow-sm active:scale-95 transition cursor-pointer";
-                d.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-slate-900 text-yellow-500 rounded-xl flex items-center justify-center font-black italic">${c.name.charAt(0)}</div>
-                        <div><h3 class="font-bold">${c.name}</h3><p class="text-[9px] text-slate-400 font-bold uppercase">${c.gender} • ${c.age} años</p></div>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-slate-200"></i>
-                `;
-                d.onclick = () => { selClient = {id: doc.id, ...c}; verHistorial(); };
-                list.appendChild(d);
+                d.className = "p-5 bg-white rounded-3xl border border-slate-200 flex justify-between items-center active:scale-95 transition cursor-pointer";
+                d.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 bg-slate-900 text-yellow-500 rounded-xl flex items-center justify-center font-black italic">${c.name.charAt(0)}</div><div><h3 class="font-bold">${c.name}</h3><p class="text-[9px] text-slate-400 font-bold uppercase">${c.gender} • ${c.age} años</p></div></div><i data-lucide="chevron-right" class="text-slate-200"></i>`;
+                d.onclick = () => { selClient = {id: doc.id, ...c}; abrirHistorial(); };
+                cont.appendChild(d);
             });
             lucide.createIcons();
         }
 
-        async function verHistorial() {
-            cambiarVista('view-history');
-            document.getElementById('hist-client-name').innerText = selClient.name;
-            const hList = document.getElementById('hist-list');
-            hList.innerHTML = '<p class="text-center py-20 opacity-30 italic">Buscando mediciones...</p>';
-            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('assessments').orderBy('date', 'desc').get();
+        async function abrirHistorial() {
+            irA('view-history');
+            document.getElementById('h-nombre').innerText = selClient.name;
+            document.getElementById('h-edad').innerText = `${selClient.age} años • ${selClient.gender}`;
+            const hList = document.getElementById('h-lista');
+            hList.innerHTML = '<div class="text-center py-10 opacity-20">Cargando...</div>';
+            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('evals').orderBy('date', 'desc').get();
             hList.innerHTML = '';
             snap.forEach(doc => {
                 const r = doc.data();
-                const fg = getGrasaStatus(r.fat, selClient.age, selClient.gender);
-                const ms = getMuscStatus(r.muscle, selClient.age, selClient.gender);
-                const vs = getViscStatus(r.visceral);
-                const item = document.createElement('div');
-                item.className = "bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-4";
-                item.innerHTML = `
-                    <div class="flex justify-between border-b pb-3 items-center">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">${new Date(r.date).toLocaleDateString()}</span>
-                        <span class="bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black">${r.weight} kg</span>
+                const imc = getIMC(r.weight, r.height);
+                const gr = getGrasa(r.fat, selClient.age, selClient.gender);
+                const ms = getMusc(r.muscle, selClient.age, selClient.gender);
+                const vs = getVisc(r.visceral);
+                
+                const div = document.createElement('div');
+                div.className = "bg-white p-6 rounded-[2.5rem] border border-slate-200 space-y-4";
+                div.innerHTML = `
+                    <div class="flex justify-between border-b pb-3 font-black text-[10px] text-slate-400 uppercase">
+                        <span>${new Date(r.date).toLocaleDateString()}</span>
+                        <span class="text-slate-900 bg-yellow-400 px-3 py-0.5 rounded-full">${r.weight} kg</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="p-2 bg-slate-50 rounded-2xl"><p class="text-[8px] font-black text-slate-400 uppercase">Grasa</p><p class="text-sm font-black text-slate-700">${r.fat}%</p><p class="text-[8px] font-bold ${fg.c}">${fg.l}</p></div>
-                        <div class="p-2 bg-slate-50 rounded-2xl"><p class="text-[8px] font-black text-slate-400 uppercase">Músculo</p><p class="text-sm font-black text-slate-700">${r.muscle}%</p><p class="text-[8px] font-bold ${ms.c}">${ms.l}</p></div>
-                        <div class="p-2 bg-slate-50 rounded-2xl"><p class="text-[8px] font-black text-slate-400 uppercase">Visceral</p><p class="text-sm font-black text-slate-700">${r.visceral}</p><p class="text-[8px] font-bold ${vs.c}">${vs.l}</p></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">IMC</p><p class="text-sm font-black">${imc.val}</p><p class="text-[8px] font-bold ${imc.c} uppercase">${imc.l}</p></div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Grasa</p><p class="text-sm font-black">${r.fat}%</p><p class="text-[8px] font-bold ${gr.c} uppercase">${gr.l}</p></div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Músculo</p><p class="text-sm font-black">${r.muscle}%</p><p class="text-[8px] font-bold ${ms.c} uppercase">${ms.l}</p></div>
+                        <div class="p-3 bg-slate-50 rounded-2xl text-center"><p class="text-[8px] font-black text-slate-400 uppercase mb-1">Visceral</p><p class="text-sm font-black">${r.visceral}</p><p class="text-[8px] font-bold ${vs.c} uppercase">${vs.l}</p></div>
                     </div>
                 `;
-                hList.appendChild(item);
+                hList.appendChild(div);
             });
-            if(snap.empty) hList.innerHTML = '<div class="text-center py-20 opacity-20"><i data-lucide="scale" class="mx-auto mb-4" size="48"></i><p class="font-black text-xs uppercase tracking-widest">Sin datos</p></div>';
+            if(snap.empty) hList.innerHTML = '<div class="text-center py-20 opacity-20 font-black uppercase text-xs">Sin registros aún</div>';
             lucide.createIcons();
         }
 
-        async function cargarRecientes() {
-            const list = document.getElementById('recientes-list');
-            const snap = await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').limit(3).get();
-            list.innerHTML = '';
-            snap.forEach(doc => {
-                list.innerHTML += `<div class="p-4 bg-slate-50 rounded-2xl flex justify-between font-bold text-slate-600 text-xs">${doc.data().name} <span class="text-green-500">ACTIVO</span></div>`;
-            });
-            if(snap.empty) list.innerHTML = '<p class="text-center text-slate-300 text-[10px] uppercase py-4">Club vacío</p>';
-        }
-
-        // --- FORMS ---
-        document.getElementById('form-cliente').onsubmit = async (e) => {
+        async function crearCliente(e) {
             e.preventDefault();
             await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').add({
                 name: document.getElementById('in-name').value,
@@ -298,26 +263,21 @@
                 gender: document.getElementById('in-gender').value,
                 date: new Date().toISOString()
             });
-            e.target.reset();
-            renderClientes();
-            cambiarVista('view-clients');
-        };
+            irA('view-clients');
+        }
 
-        document.getElementById('form-eval').onsubmit = async (e) => {
+        async function guardarEval(e) {
             e.preventDefault();
-            await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('assessments').add({
-                weight: document.getElementById('ev-w').value,
-                fat: document.getElementById('ev-f').value,
-                muscle: document.getElementById('ev-m').value,
-                visceral: document.getElementById('ev-v').value,
+            await db.collection('artifacts').doc(appId).collection('users').doc(user.uid).collection('clients').doc(selClient.id).collection('evals').add({
+                weight: parseFloat(document.getElementById('ev-w').value),
+                height: parseFloat(document.getElementById('ev-h').value),
+                fat: parseFloat(document.getElementById('ev-f').value),
+                muscle: parseFloat(document.getElementById('ev-m').value),
+                visceral: parseInt(document.getElementById('ev-v').value),
                 date: new Date().toISOString()
             });
-            e.target.reset();
-            verHistorial();
-        };
-
+            abrirHistorial();
+        }
     </script>
 </body>
 </html>
-
-```
