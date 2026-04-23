@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>NutriTrack | Club de Bienestar 🌿</title>
+    
+    <!-- Librerías de confianza -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -19,31 +21,37 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
         
+        /* Ajustes Masivos para Impresión */
         @media print {
-            @page { size: portrait; margin: 1cm; }
-            body { background: white !important; padding: 0 !important; font-size: 16pt !important; }
+            @page { size: portrait; margin: 0.5cm; }
+            body { background: white !important; padding: 0 !important; font-size: 18pt !important; }
             nav, button, #loader, .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .card-shadow { box-shadow: none !important; border: 2px solid #e2e8f0 !important; page-break-inside: avoid; margin-bottom: 40px !important; padding: 40px !important; border-radius: 20px !important; }
+            .card-shadow { box-shadow: none !important; border: 3px solid #e2e8f0 !important; page-break-inside: avoid; margin-bottom: 40px !important; padding: 40px !important; border-radius: 20px !important; }
             main { max-width: 100% !important; margin: 0 !important; width: 100% !important; }
-            .text-sm { font-size: 14pt !important; }
-            .text-xs { font-size: 12pt !important; }
-            .text-lg { font-size: 20pt !important; }
+            .text-sm { font-size: 16pt !important; }
+            .text-xs { font-size: 14pt !important; }
+            .text-lg { font-size: 24pt !important; }
             .grid { display: block !important; }
-            .grid > div { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+            .grid > div { margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
         }
     </style>
 </head>
 <body class="text-slate-800 pb-32">
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-emerald-900 flex flex-col items-center justify-center text-white">
-        <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <h1 class="font-bold text-xl tracking-tighter uppercase italic">Nutri-Track 🌿</h1>
-        <button id="btn-forzar" onclick="forzarEntrada()" class="mt-8 px-6 py-2 bg-emerald-500 rounded-full text-[10px] font-black uppercase hidden">Entrar al Club ⚡</button>
+    <!-- Pantalla de Carga Blindada -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-emerald-900 flex flex-col items-center justify-center text-white transition-opacity duration-500">
+        <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-6"></div>
+        <h1 class="font-bold text-2xl tracking-tighter uppercase italic">Nutri-Track 🌿</h1>
+        <p class="text-emerald-300 text-xs mt-2 font-bold animate-pulse">Sincronizando Club...</p>
+        <button id="btn-emergency" onclick="entrarYa()" class="hidden mt-12 px-10 py-5 bg-emerald-500 rounded-full text-sm font-black uppercase tracking-widest shadow-2xl animate-bounce">
+            Entrar al Club ⚡
+        </button>
     </div>
 
     <main id="app-ui" class="max-w-md mx-auto hidden">
-        <!-- INICIO -->
+        
+        <!-- DASHBOARD -->
         <section id="view-home" class="vista activa p-4 space-y-6">
             <header class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                 <div class="relative z-10">
@@ -52,14 +60,15 @@
                 </div>
                 <i data-lucide="leaf" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12 text-white"></i>
             </header>
+
             <div class="grid grid-cols-2 gap-4">
                 <button onclick="irA('view-list')" class="p-6 bg-white rounded-[2rem] border border-emerald-100 flex flex-col items-center card-shadow active:scale-95 transition">
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl mb-2"><i data-lucide="users"></i></div>
-                    <span class="font-bold text-[10px] uppercase text-slate-500">Socios</span>
+                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Socios</span>
                 </button>
                 <button onclick="irA('view-new')" class="p-6 bg-white rounded-[2rem] border border-emerald-100 flex flex-col items-center card-shadow active:scale-95 transition">
                     <div class="p-3 bg-orange-50 text-orange-500 rounded-2xl mb-2"><i data-lucide="user-plus"></i></div>
-                    <span class="font-bold text-[10px] uppercase text-slate-500">Nuevo</span>
+                    <span class="font-bold text-[10px] uppercase text-slate-500 tracking-widest">Nuevo</span>
                 </button>
             </div>
         </section>
@@ -68,7 +77,7 @@
         <section id="view-list" class="vista p-4 space-y-4">
             <div class="flex items-center gap-4">
                 <button onclick="irA('view-home')" class="p-2 bg-white rounded-xl border border-emerald-100 shadow-sm"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase tracking-tighter">Directorio</h2>
+                <h2 class="text-xl font-extrabold text-emerald-900 italic uppercase">Directorio</h2>
             </div>
             <div id="cont-clientes" class="space-y-3"></div>
         </section>
@@ -76,9 +85,9 @@
         <!-- REGISTRO -->
         <section id="view-new" class="vista p-4 space-y-4">
             <button onclick="irA('view-home')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nuevo Socio</h2>
-            <form id="form-new-client" class="bg-white p-8 rounded-[2.5rem] border border-emerald-100 space-y-5 card-shadow">
-                <input id="nc-name" required placeholder="Nombre del Socio" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold outline-none">
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Alta de Socio</h2>
+            <form id="form-client" class="bg-white p-8 rounded-[2.5rem] border border-emerald-100 space-y-5 card-shadow">
+                <input id="nc-name" required placeholder="Nombre Completo" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold outline-none">
                 <div class="grid grid-cols-2 gap-4">
                     <input id="nc-age" required type="number" placeholder="Edad" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold">
                     <select id="nc-gender" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none font-bold text-slate-500">
@@ -86,7 +95,7 @@
                         <option value="Femenino">Femenino</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase shadow-lg">Registrar Socio</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase shadow-lg">Guardar Registro</button>
             </form>
         </section>
 
@@ -101,39 +110,41 @@
                     </div>
                     <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus" size="20"></i></button>
                 </div>
-                <!-- BOTÓN IMPRIMIR GRANDE -->
                 <button onclick="window.print()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-3 shadow-md active:scale-95 transition">
                     <i data-lucide="printer" size="20"></i> Imprimir Reporte para Socio
                 </button>
             </div>
+            
             <div class="hidden print-only text-center mb-12 border-b-8 border-emerald-500 pb-10">
                 <h1 class="text-4xl font-black text-emerald-800 uppercase italic">REPORTE DE BIENESTAR 🌿</h1>
                 <div id="print-header" class="mt-8 p-8 bg-emerald-50 rounded-[2.5rem] text-xl font-black text-emerald-900 border-2 border-emerald-100"></div>
             </div>
+
             <div id="hist-lista" class="space-y-8"></div>
         </section>
 
         <!-- EVALUACIÓN -->
         <section id="view-eval" class="vista p-4 space-y-6">
             <button onclick="irA('view-history')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nueva Evaluación</h2>
-            <form id="form-assessment" class="bg-white p-8 rounded-[3rem] border border-emerald-100 space-y-4 card-shadow">
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2 uppercase italic text-center">Nueva Medición</h2>
+            <form id="form-eval" class="bg-white p-8 rounded-[3rem] border border-emerald-100 space-y-4 card-shadow">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
-                        <label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Talla (cm)</label>
-                        <input id="ev-talla" required type="number" placeholder="Ej. 170" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold">
+                        <label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Talla (cm)</label>
+                        <input id="ev-talla" required type="number" placeholder="Ej. 170" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none">
                     </div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Peso (kg)</label><input id="ev-peso" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">% GC (Grasa)</label><input id="ev-grasa" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">% MM (Músculo)</label><input id="ev-musculo" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">MB (Metabolismo)</label><input id="ev-metab" required type="number" placeholder="kcal" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Edad Bio.</label><input id="ev-bio" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
-                    <div class="col-span-2"><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block">Grasa Visceral</label><input id="ev-visc" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Peso (kg)</label><input id="ev-peso" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% GC (Grasa)</label><input id="ev-grasa" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">% MM (Músculo)</label><input id="ev-musculo" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">MB (Metabolismo)</label><input id="ev-met" required type="number" placeholder="kcal" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Edad Bio.</label><input id="ev-bio" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
+                    <div class="col-span-2"><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase block mb-1">Grasa Visceral</label><input id="ev-visc" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold border-none"></div>
                 </div>
                 <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-bold uppercase shadow-xl mt-2">Guardar Evaluación</button>
             </form>
         </section>
 
+        <!-- MENU -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass border border-emerald-100 px-8 py-5 flex justify-between rounded-[2.5rem] shadow-2xl z-50 no-print">
             <button onclick="irA('view-home')"><i data-lucide="home" class="text-slate-400"></i></button>
             <button onclick="irA('view-list')"><i data-lucide="clipboard-list" class="text-slate-400"></i></button>
@@ -152,36 +163,33 @@
         };
         firebase.initializeApp(config);
         const db = firebase.firestore();
-        const clientsRef = db.collection('artifacts').doc('body-track-3ff2b').collection('public').doc('data').collection('clients');
+        const path = db.collection('artifacts').doc('body-track-3ff2b').collection('public').doc('data').collection('clients');
 
         let selId = null, selData = null;
 
-        // --- DIAGNÓSTICOS CON TUS NUEVOS COLORES ---
-        function getDiagIMC(val) {
-            const v = parseFloat(val);
-            if (v < 18.5) return { l: 'Bajo', c: 'text-blue-500' };
-            if (v < 25) return { l: 'Normal', c: 'text-blue-600' };
-            if (v < 30) return { l: 'Alto', c: 'text-orange-500' };
-            return { l: 'Riesgo', c: 'text-red-600' };
-        }
-
-        function getDiagGrasa(v, e, g) {
-            const isM = g === 'Masculino';
-            if (e < 30) {
-                if (v <= (isM ? 18 : 21)) return { l: 'Normal', c: 'text-blue-600' };
-                if (v <= (isM ? 21 : 24)) return { l: 'Alto', c: 'text-orange-500' };
-                return { l: 'Riesgo', c: 'text-red-600' };
-            } else {
-                if (v <= (isM ? 23 : 26)) return { l: 'Normal', c: 'text-blue-600' };
-                if (v <= (isM ? 26 : 29)) return { l: 'Alto', c: 'text-orange-500' };
+        // DIAGNÓSTICOS CON TUS COLORES
+        function getD(tipo, v, edad, gen) {
+            v = parseFloat(v);
+            if (tipo === 'imc') {
+                if (v < 18.5) return { l: 'Bajo', c: 'text-blue-500' };
+                if (v < 25) return { l: 'Normal', c: 'text-blue-600' };
+                if (v < 30) return { l: 'Alto', c: 'text-orange-500' };
                 return { l: 'Riesgo', c: 'text-red-600' };
             }
-        }
-
-        function getDiagVisc(v) {
-            if (v <= 9) return { l: 'Normal', c: 'text-blue-600' };
-            if (v <= 14) return { l: 'Alto', c: 'text-orange-500' };
-            return { l: 'Riesgo', c: 'text-red-600' };
+            if (tipo === 'gc') {
+                const isM = gen === 'Masculino';
+                const lim = edad < 30 ? (isM ? 18 : 21) : (isM ? 23 : 26);
+                const risk = edad < 30 ? (isM ? 21 : 24) : (isM ? 26 : 29);
+                if (v <= lim) return { l: 'Normal', c: 'text-blue-600' };
+                if (v <= risk) return { l: 'Alto', c: 'text-orange-500' };
+                return { l: 'Riesgo', c: 'text-red-600' };
+            }
+            if (tipo === 'visc') {
+                if (v <= 9) return { l: 'Normal', c: 'text-blue-600' };
+                if (v <= 14) return { l: 'Alto', c: 'text-orange-500' };
+                return { l: 'Riesgo', c: 'text-red-600' };
+            }
+            return { l: 'Normal', c: 'text-blue-600' };
         }
 
         function irA(id) {
@@ -191,42 +199,37 @@
             window.scrollTo(0,0);
         }
 
-        window.onload = () => {
-            setTimeout(() => { document.getElementById('btn-forzar').classList.remove('hidden'); }, 3000);
-            firebase.auth().signInAnonymously().then(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('app-ui').style.display = 'block';
-                lucide.createIcons();
-            });
-        };
-
-        function forzarEntrada() {
+        function entrarYa() {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('app-ui').style.display = 'block';
             lucide.createIcons();
         }
 
-        document.getElementById('form-new-client').onsubmit = async (e) => {
+        window.onload = () => {
+            setTimeout(() => document.getElementById('btn-emergency').classList.remove('hidden'), 2000);
+            firebase.auth().signInAnonymously().then(() => entrarYa());
+        };
+
+        document.getElementById('form-client').onsubmit = async (e) => {
             e.preventDefault();
-            await clientsRef.add({
+            await path.add({
                 name: document.getElementById('nc-name').value,
                 age: parseInt(document.getElementById('nc-age').value),
                 gender: document.getElementById('nc-gender').value,
                 date: new Date().toISOString()
             });
-            e.target.reset();
             irA('view-list');
         };
 
         async function renderLista() {
             const cont = document.getElementById('cont-clientes');
-            cont.innerHTML = '<p class="text-center py-10 opacity-50 uppercase text-[10px] font-bold tracking-widest">Sincronizando Club...</p>';
-            const snap = await clientsRef.orderBy('name').get();
+            cont.innerHTML = '<p class="text-center py-10 opacity-30 font-black text-xs uppercase tracking-widest animate-pulse">Sincronizando Club...</p>';
+            const snap = await path.orderBy('name').get();
             cont.innerHTML = '';
             snap.forEach(doc => {
                 const c = doc.data();
                 const d = document.createElement('div');
-                d.className = "p-5 bg-white rounded-[2rem] border border-emerald-50 flex justify-between items-center shadow-sm active:scale-95 transition cursor-pointer";
+                d.className = "p-5 bg-white rounded-[2rem] border border-emerald-50 flex justify-between items-center card-shadow active:scale-95 transition cursor-pointer";
                 d.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold italic">${c.name.charAt(0)}</div><div><h3 class="font-bold text-sm text-slate-700">${c.name}</h3><p class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">${c.gender} • ${c.age} años</p></div></div><i data-lucide="chevron-right" class="text-emerald-100"></i>`;
                 d.onclick = () => { selId = doc.id; selData = c; renderHistorial(); };
                 cont.appendChild(d);
@@ -239,46 +242,44 @@
             document.getElementById('hist-name').innerText = selData.name;
             document.getElementById('print-header').innerText = `SOCIO: ${selData.name.toUpperCase()} | EDAD: ${selData.age} | SEXO: ${selData.gender.toUpperCase()}`;
             const lista = document.getElementById('hist-lista');
-            lista.innerHTML = '<p class="text-center py-10 opacity-30 text-xs">Cargando mediciones compartidas...</p>';
-            const snap = await clientsRef.doc(selId).collection('evals').orderBy('date', 'desc').get();
+            lista.innerHTML = '<p class="text-center py-10 opacity-30 text-xs uppercase font-black">Cargando mediciones compartidas...</p>';
+            const snap = await path.doc(selId).collection('evals').orderBy('date', 'desc').get();
             lista.innerHTML = '';
             snap.forEach(doc => {
                 const r = doc.data();
-                const imcVal = (r.weight / ((r.height/100)*(r.height/100))).toFixed(1);
-                const dIMC = getDiagIMC(imcVal);
-                const dGC = getDiagGrasa(r.fat, selData.age, selData.gender);
-                const dVisc = getDiagVisc(r.visceral);
-                
-                const div = document.createElement('div');
-                div.className = "bg-white p-6 rounded-[2.5rem] border-2 border-emerald-50 card-shadow space-y-6 print:border-4";
-                div.innerHTML = `
+                const imcV = (r.weight / ((r.height/100)*(r.height/100))).toFixed(1);
+                const di = getD('imc', imcV);
+                const dg = getD('gc', r.fat, selData.age, selData.gender);
+                const dv = getD('visc', r.visceral);
+                const d = document.createElement('div');
+                d.className = "bg-white p-6 rounded-[2.5rem] border-2 border-emerald-50 card-shadow space-y-6 print:border-4 print:p-10";
+                d.innerHTML = `
                     <div class="flex justify-between border-b border-emerald-100 pb-4 items-center">
-                        <span class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] print:text-xl">${new Date(r.date).toLocaleDateString()}</span>
-                        <span class="text-emerald-700 font-black bg-emerald-50 px-6 py-2 rounded-full text-sm print:text-2xl print:bg-white print:border-4 border-emerald-100">${r.weight} KG</span>
+                        <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest print:text-2xl">${new Date(r.date).toLocaleDateString()}</span>
+                        <span class="text-emerald-700 font-black bg-emerald-50 px-6 py-2 rounded-full text-sm print:text-3xl print:bg-white print:border-4 border-emerald-100">${r.weight} KG</span>
                     </div>
                     <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-2">
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-sm">IMC (Masa Corp.)</p>
-                            <p class="text-sm font-black text-slate-800 leading-none print:text-3xl">${imcVal}</p>
-                            <p class="text-[10px] font-black ${dIMC.c} uppercase mt-2 print:text-xl">${dIMC.l}</p>
+                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-4">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-lg">IMC</p>
+                            <p class="text-sm font-black text-slate-800 leading-none print:text-4xl">${imcV}</p>
+                            <p class="text-[10px] font-black ${di.c} uppercase mt-2 print:text-2xl">${di.l}</p>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-2">
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-sm">% GC (Grasa)</p>
-                            <p class="text-sm font-black text-slate-800 leading-none print:text-3xl">${r.fat}%</p>
-                            <p class="text-[10px] font-black ${dGC.c} uppercase mt-2 print:text-xl">${dGC.l}</p>
+                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-4">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-lg">% GRASA</p>
+                            <p class="text-sm font-black text-slate-800 leading-none print:text-4xl">${r.fat}%</p>
+                            <p class="text-[10px] font-black ${dg.c} uppercase mt-2 print:text-2xl">${dg.l}</p>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-2">
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-sm">% MM (Músculo)</p>
-                            <p class="text-sm font-black text-slate-800 leading-none print:text-3xl">${r.muscle}%</p>
-                            <p class="text-[10px] font-black text-blue-600 uppercase mt-2 print:text-xl">Normal</p>
+                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-4">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-lg">% MÚSCULO</p>
+                            <p class="text-sm font-black text-slate-800 leading-none print:text-4xl">${r.muscle}%</p>
+                            <p class="text-[10px] font-black text-blue-600 uppercase mt-2 print:text-2xl">Normal</p>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-2">
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-sm">G. Visceral</p>
-                            <p class="text-sm font-black text-slate-800 leading-none print:text-3xl">${r.visceral}</p>
-                            <p class="text-[10px] font-black ${dVisc.c} uppercase mt-2 print:text-xl">${dVisc.l}</p>
+                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-4">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-lg">G. VISCERAL</p>
+                            <p class="text-sm font-black text-slate-800 leading-none print:text-4xl">${r.visceral}</p>
+                            <p class="text-[10px] font-black ${dv.c} uppercase mt-2 print:text-2xl">${dv.l}</p>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-2">
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-sm">Metabolismo</p>
-                            <p class="text-sm font-black text-slate-800 leading-none print:text-3xl">${r.metabolism || '-'}</p>
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mt-2 print:text-sm">kcal/día</p>
-                        </div>
+                        <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100 print:border-4">
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mb-2 print:text-lg">METABOLISMO</p>
+                            <p class="text-sm font-black text-slate-800 leading-none print:text-4xl">${r.metabolism || '-'}</p>
+                            <p c
