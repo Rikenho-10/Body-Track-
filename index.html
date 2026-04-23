@@ -4,149 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="NutriTrack">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
-    
-    <title>Club de Bienestar | NutriTrack 🌿</title>
+    <title>NutriTrack | Club de Bienestar 🌿</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK Clásico -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            background-color: #f0fdf4; /* Un verde menta muy suave */
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0fdf4; }
         .vista { display: none; }
-        .vista.activa { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
-        .card-wellness { background: white; border-radius: 2rem; border: 1px solid #dcfce7; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .btn-green { background: #10b981; color: white; transition: all 0.2s; }
-        .btn-green:active { transform: scale(0.96); background: #059669; }
-        input:focus, select:focus { border-color: #10b981 !important; ring: 2px rgba(16, 185, 129, 0.2); }
+        .vista.activa { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="text-slate-800 pb-32">
+<body class="text-slate-800 pb-28">
 
-    <!-- Pantalla de Carga Estilo Nutrición -->
-    <div id="loader" class="fixed inset-0 z-[100] bg-emerald-50 flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-        <h1 class="text-emerald-800 font-extrabold text-2xl tracking-tight flex items-center gap-2">
-            NUTRI-TRACK <i data-lucide="leaf" class="text-emerald-500"></i>
-        </h1>
-        <p class="text-emerald-600/60 text-[10px] font-bold uppercase tracking-widest mt-2 italic">Sincronizando Bienestar...</p>
+    <div id="loader" class="fixed inset-0 z-[100] bg-emerald-900 flex flex-col items-center justify-center text-white">
+        <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h1 class="font-bold text-xl tracking-tighter">NUTRI-TRACK 🌿</h1>
+        <button id="btn-forzar" onclick="forzarApp()" class="mt-8 px-6 py-2 bg-emerald-500 rounded-full text-xs font-bold uppercase hidden">Entrar Manual ⚡</button>
     </div>
 
-    <main id="app" class="max-w-md mx-auto min-h-screen opacity-0 transition-opacity duration-500">
+    <main id="app-ui" class="max-w-md mx-auto hidden">
         
-        <!-- DASHBOARD -->
+        <!-- INICIO -->
         <section id="view-home" class="vista activa p-4 space-y-6">
-            <header class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <h1 class="text-2xl font-extrabold leading-none">¡Hola, Ricardo! 👋</h1>
-                    <p class="text-emerald-100 text-[11px] font-semibold mt-2">Bienvenidos a su Club de Nutrición</p>
-                </div>
-                <i data-lucide="sun" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12"></i>
+            <header class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-8 rounded-[2.5rem] shadow-lg relative overflow-hidden">
+                <h1 class="text-2xl font-extrabold italic">¡Hola, Ricardo! 👋</h1>
+                <p class="text-emerald-100 text-xs mt-1">Club de Bienestar & Nutrición</p>
+                <i data-lucide="leaf" class="absolute -right-4 -top-4 opacity-20 w-32 h-32 rotate-12"></i>
             </header>
 
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="irA('view-clients')" class="p-6 card-wellness flex flex-col items-center btn-press">
-                    <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl mb-3"><i data-lucide="users"></i></div>
-                    <span class="font-bold text-slate-700 text-xs">Directorio</span>
+                <button onclick="irA('view-list')" class="p-6 bg-white rounded-3xl border border-emerald-100 flex flex-col items-center shadow-sm">
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl mb-2"><i data-lucide="users"></i></div>
+                    <span class="font-bold text-xs">Directorio</span>
                 </button>
-                <button onclick="irA('view-add')" class="p-6 card-wellness flex flex-col items-center btn-press">
-                    <div class="p-4 bg-orange-50 text-orange-500 rounded-2xl mb-3"><i data-lucide="smile"></i></div>
-                    <span class="font-bold text-slate-700 text-xs">Nuevo Socio</span>
+                <button onclick="irA('view-new')" class="p-6 bg-white rounded-3xl border border-emerald-100 flex flex-col items-center shadow-sm">
+                    <div class="p-3 bg-orange-50 text-orange-500 rounded-2xl mb-2"><i data-lucide="user-plus"></i></div>
+                    <span class="font-bold text-xs">Nuevo Socio</span>
                 </button>
-            </div>
-
-            <div class="card-wellness p-6">
-                <h2 class="text-[10px] font-black uppercase text-emerald-600 mb-4 tracking-widest flex items-center gap-2">
-                    <i data-lucide="heart" size="14"></i> Actividad de hoy
-                </h2>
-                <div id="recientes" class="space-y-3">
-                    <div class="h-10 bg-slate-50 animate-pulse rounded-xl"></div>
-                </div>
             </div>
         </section>
 
-        <!-- DIRECTORIO -->
-        <section id="view-clients" class="vista p-4 space-y-4">
+        <!-- LISTADO -->
+        <section id="view-list" class="vista p-4 space-y-4">
             <div class="flex items-center gap-4">
-                <button onclick="irA('view-home')" class="p-3 bg-white rounded-2xl border border-emerald-100 shadow-sm"><i data-lucide="arrow-left" size="20" class="text-emerald-600"></i></button>
-                <h2 class="text-xl font-extrabold text-emerald-900">Nuestros Socios</h2>
+                <button onclick="irA('view-home')" class="p-2 bg-white rounded-xl border"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
+                <h2 class="text-xl font-extrabold text-emerald-900">Socios del Club</h2>
             </div>
-            <div id="lista-clientes" class="space-y-3"></div>
+            <div id="cont-clientes" class="space-y-3"></div>
         </section>
 
         <!-- REGISTRO -->
-        <section id="view-add" class="vista p-4 space-y-4">
+        <section id="view-new" class="vista p-4 space-y-4">
             <button onclick="irA('view-home')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-2xl font-extrabold text-emerald-900 px-2">Nuevo Registro</h2>
-            <form onsubmit="crearCliente(event)" class="card-wellness p-8 space-y-5">
-                <div>
-                    <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Nombre Completo</label>
-                    <input id="in-name" required placeholder="Ej. Ana García" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold outline-none">
-                </div>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2">Nuevo Registro</h2>
+            <form onsubmit="registrarSocio(event)" class="bg-white p-6 rounded-[2rem] border border-emerald-100 space-y-4 shadow-sm">
+                <input id="reg-nom" required placeholder="Nombre Completo" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Edad</label>
-                        <input id="in-age" required type="number" placeholder="Edad" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-emerald-600 uppercase mb-2 block ml-2">Sexo</label>
-                        <select id="in-gender" class="w-full p-4 bg-emerald-50/30 rounded-2xl border border-emerald-100 font-semibold text-slate-500 outline-none">
-                            <option value="Masculino">Masculino</option>
-                            <option value="Femenino">Femenino</option>
-                        </select>
-                    </div>
+                    <input id="reg-eda" required type="number" placeholder="Edad" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold">
+                    <select id="reg-sex" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
                 </div>
-                <button type="submit" class="w-full btn-green p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-200 mt-4">Comenzar Evaluación</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-4 rounded-2xl font-bold uppercase tracking-widest shadow-lg">Guardar Socio</button>
             </form>
         </section>
 
-        <!-- HISTORIAL -->
+        <!-- EXPEDIENTE (EVOLUCIÓN) -->
         <section id="view-history" class="vista p-4 space-y-6">
             <div class="flex items-center justify-between">
-                <button onclick="irA('view-clients')" class="p-2 bg-white rounded-xl border border-emerald-100"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
+                <button onclick="irA('view-list')" class="p-2 bg-white rounded-xl border"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
                 <div class="text-center">
-                    <h2 id="h-nombre" class="font-extrabold text-emerald-900 leading-none">Nombre</h2>
-                    <span id="h-info" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Resultados</span>
+                    <h2 id="hist-nom" class="font-extrabold text-emerald-900">Socio</h2>
+                    <span id="hist-meta" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Evolución</span>
                 </div>
-                <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg shadow-orange-100"><i data-lucide="plus"></i></button>
+                <button onclick="irA('view-eval')" class="bg-orange-500 text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus"></i></button>
             </div>
-            <div id="h-lista" class="space-y-4"></div>
+            <div id="hist-lista" class="space-y-4"></div>
         </section>
 
-        <!-- EVALUACIÓN -->
+        <!-- NUEVA EVALUACIÓN -->
         <section id="view-eval" class="vista p-4 space-y-6">
             <button onclick="irA('view-history')"><i data-lucide="arrow-left" class="text-emerald-600"></i></button>
-            <h2 class="text-2xl font-extrabold text-emerald-900">Nueva Medición</h2>
-            <form onsubmit="guardarEval(event)" class="card-wellness p-8 space-y-6">
-                <div class="grid grid-cols-2 gap-5">
-                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">Peso (kg)</label><input id="ev-w" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">Talla (cm)</label><input id="ev-h" required type="number" step="1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">% Grasa</label><input id="ev-f" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
-                    <div><label class="text-[9px] font-bold text-emerald-600 uppercase ml-2 mb-1 block">G. Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl border-none outline-none font-bold"></div>
+            <h2 class="text-xl font-extrabold text-emerald-900 px-2">Nueva Medición</h2>
+            <form onsubmit="guardarEval(event)" class="bg-white p-6 rounded-[2rem] border border-emerald-100 space-y-4 shadow-xl">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase">Peso (kg)</label><input id="ev-p" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase">Talla (cm)</label><input id="ev-t" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase">% Grasa</label><input id="ev-g" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase">% Músculo</label><input id="ev-m" required type="number" step="0.1" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
+                    <div class="col-span-2"><label class="text-[9px] font-bold text-emerald-600 ml-2 uppercase">Grasa Visceral</label><input id="ev-v" required type="number" class="w-full p-4 bg-emerald-50/30 rounded-2xl outline-none font-bold"></div>
                 </div>
-                <button type="submit" class="w-full btn-green p-5 rounded-2xl font-bold uppercase tracking-widest shadow-lg shadow-emerald-100">Ver Diagnóstico</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white p-4 rounded-2xl font-bold uppercase tracking-widest shadow-lg">Registrar Datos</button>
             </form>
         </section>
 
-        <!-- NAVEGACIÓN -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[340px] glass border border-emerald-100 px-8 py-4 flex justify-between rounded-[2.5rem] shadow-xl z-50">
-            <button onclick="irA('view-home')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="home"></i></button>
-            <button onclick="irA('view-clients')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="clipboard-list"></i></button>
-            <button onclick="irA('view-add')" class="p-2 text-slate-400 hover:text-emerald-600 transition-colors"><i data-lucide="user-plus"></i></button>
+        <!-- NAV -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass border border-emerald-100 px-8 py-4 flex justify-between rounded-[2rem] shadow-xl z-50">
+            <button onclick="irA('view-home')"><i data-lucide="home" class="text-slate-400"></i></button>
+            <button onclick="irA('view-list')"><i data-lucide="clipboard-list" class="text-slate-400"></i></button>
+            <button onclick="irA('view-new')"><i data-lucide="user-plus" class="text-slate-400"></i></button>
         </nav>
     </main>
 
@@ -161,159 +124,101 @@
         };
         firebase.initializeApp(config);
         const db = firebase.firestore();
-        const fireAppId = 'body-track-3ff2b';
-        
-        // RUTA COMPARTIDA (Ricardo & Esposa)
-        const sharedPath = db.collection('artifacts').doc(fireAppId).collection('public').doc('data');
-        const clientsRef = sharedPath.collection('clients');
+        const clientsRef = db.collection('artifacts').doc('body-track-3ff2b').collection('public').doc('data').collection('clients');
 
-        let user, selClient;
+        let selId = null, selData = null;
 
-        // DIAGNÓSTICOS (Tablas Ricardo)
-        function getIMC(w, h) {
-            const val = (w / ((h/100) * (h/100))).toFixed(1);
-            if (val < 18.5) return { val, l: 'Bajo Peso', c: 'text-blue-500', bg: 'bg-blue-50' };
-            if (val < 25) return { val, l: 'Ideal', c: 'text-emerald-600', bg: 'bg-emerald-50' };
-            if (val < 30) return { val, l: 'Sobrepeso', c: 'text-orange-500', bg: 'bg-orange-50' };
-            return { val, l: 'Obesidad', c: 'text-rose-600', bg: 'bg-rose-50' };
-        }
-
-        function getGrasa(v, e, g) {
-            const isM = g === 'Masculino';
-            if (e < 30) {
-                if (isM) {
-                    if (v <= 11) return { l: 'Fitness', c: 'text-emerald-600' };
-                    if (v <= 18) return { l: 'Normal', c: 'text-emerald-600' };
-                    return { l: 'Alta', c: 'text-rose-500' };
-                } else {
-                    if (v <= 14) return { l: 'Fitness', c: 'text-emerald-600' };
-                    if (v <= 21) return { l: 'Normal', c: 'text-emerald-600' };
-                    return { l: 'Alta', c: 'text-rose-500' };
-                }
-            } else {
-                if (isM) {
-                    if (v <= 13) return { l: 'Excelente', c: 'text-emerald-600' };
-                    if (v <= 23) return { l: 'Normal', c: 'text-emerald-600' };
-                    return { l: 'Alta', c: 'text-rose-500' };
-                } else {
-                    if (v <= 16) return { l: 'Excelente', c: 'text-emerald-600' };
-                    if (v <= 26) return { l: 'Normal', c: 'text-emerald-600' };
-                    return { l: 'Alta', c: 'text-rose-500' };
-                }
-            }
-        }
-
-        function getVisc(v) {
-            if (v <= 9) return { l: 'Saludable', c: 'text-emerald-600' };
-            if (v <= 14) return { l: 'Nivel Alto', c: 'text-orange-500' };
-            return { l: 'Riesgoso', c: 'text-rose-600' };
-        }
-
-        function getMusc(v, e, g) {
-            const threshold = (g === 'Masculino') ? (e <= 39 ? 33.3 : 33.1) : (e <= 39 ? 24.3 : 24.1);
-            return (v < threshold) ? { l: 'Bajo', c: 'text-orange-500' } : { l: 'Fuerte', c: 'text-emerald-600' };
-        }
-
-        // ACCIONES
+        // --- LÓGICA ---
         function irA(id) {
             document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
             document.getElementById(id).classList.add('activa');
-            if(id === 'view-clients') listarClientes();
-            if(id === 'view-home') listarRecientes();
+            if(id === 'view-list') renderLista();
             window.scrollTo(0,0);
         }
 
-        window.onload = () => {
-            firebase.auth().signInAnonymously().then(res => {
-                user = res.user;
-                document.getElementById('loader').classList.add('opacity-0');
-                document.getElementById('app').classList.add('opacity-100');
-                setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    lucide.createIcons();
-                }, 500);
-                listarRecientes();
-            }).catch(e => alert("Error de red. Revisa tu conexión."));
-        };
-
-        async function listarRecientes() {
-            const snap = await clientsRef.orderBy('date', 'desc').limit(3).get();
-            const rec = document.getElementById('recientes');
-            rec.innerHTML = '';
-            snap.forEach(doc => {
-                const c = doc.data();
-                rec.innerHTML += `
-                    <div class="p-4 bg-emerald-50/50 rounded-2xl flex justify-between items-center border border-emerald-100/50">
-                        <span class="font-bold text-emerald-900 text-[11px] uppercase">${c.name}</span>
-                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    </div>
-                `;
-            });
-            if(snap.empty) rec.innerHTML = '<p class="text-center text-slate-300 py-2 text-xs">Sin actividad reciente.</p>';
+        function forzarApp() { 
+            document.getElementById('loader').style.display = 'none'; 
+            document.getElementById('app-ui').style.display = 'block';
+            lucide.createIcons();
         }
 
-        async function listarClientes() {
-            const cont = document.getElementById('lista-clientes');
-            cont.innerHTML = '<div class="text-center py-10 text-emerald-600 animate-pulse font-bold text-xs uppercase">Buscando socios...</div>';
+        window.onload = () => {
+            setTimeout(() => { document.getElementById('btn-forzar').classList.remove('hidden'); }, 4000);
+            firebase.auth().signInAnonymously().then(() => { forzarApp(); });
+        };
+
+        // --- FUNCIONES DB ---
+        async function registrarSocio(e) {
+            e.preventDefault();
+            await clientsRef.add({
+                name: document.getElementById('reg-nom').value,
+                age: parseInt(document.getElementById('reg-eda').value),
+                gender: document.getElementById('reg-sex').value,
+                date: new Date().toISOString()
+            });
+            e.target.reset();
+            irA('view-list');
+        }
+
+        async function renderLista() {
+            const cont = document.getElementById('cont-clientes');
+            cont.innerHTML = '<p class="text-center text-xs opacity-50 uppercase font-bold py-10">Buscando...</p>';
             const snap = await clientsRef.orderBy('name').get();
             cont.innerHTML = '';
             snap.forEach(doc => {
                 const c = doc.data();
-                const d = document.createElement('div');
-                d.className = "p-5 bg-white rounded-[2rem] border border-emerald-50 flex justify-between items-center shadow-sm active:scale-95 transition cursor-pointer";
-                d.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold italic">${c.name.charAt(0)}</div>
-                        <div>
-                            <h3 class="font-bold text-slate-700">${c.name}</h3>
-                            <p class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">${c.gender} • ${c.age} años</p>
-                        </div>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-emerald-100"></i>`;
-                d.onclick = () => { selClient = {id: doc.id, ...c}; abrirHistorial(); };
-                cont.appendChild(d);
+                const div = document.createElement('div');
+                div.className = "p-4 bg-white rounded-2xl border border-emerald-50 flex justify-between items-center shadow-sm active:scale-95 transition cursor-pointer";
+                div.innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold italic">${c.name.charAt(0)}</div><div><h3 class="font-bold text-sm text-slate-700">${c.name}</h3><p class="text-[9px] text-emerald-500 font-bold uppercase">${c.gender} • ${c.age} años</p></div></div><i data-lucide="chevron-right" class="text-emerald-100"></i>`;
+                div.onclick = () => { selId = doc.id; selData = c; renderHistorial(); };
+                cont.appendChild(div);
             });
             lucide.createIcons();
         }
 
-        async function abrirHistorial() {
+        async function renderHistorial() {
             irA('view-history');
-            document.getElementById('h-nombre').innerText = selClient.name;
-            document.getElementById('h-info').innerText = `${selClient.age} AÑOS • ${selClient.gender}`;
-            const hList = document.getElementById('h-lista');
-            hList.innerHTML = '<div class="text-center py-10 opacity-30 text-xs">Abriendo expediente...</div>';
-            const snap = await clientsRef.doc(selClient.id).collection('evals').orderBy('date', 'desc').get();
-            hList.innerHTML = '';
+            document.getElementById('hist-nom').innerText = selData.name;
+            const lista = document.getElementById('hist-lista');
+            lista.innerHTML = '<p class="text-center py-10 text-xs opacity-30 italic">Abriendo expediente...</p>';
+            const snap = await clientsRef.doc(selId).collection('evals').orderBy('date', 'desc').get();
+            lista.innerHTML = '';
             snap.forEach(doc => {
                 const r = doc.data();
-                const imc = getIMC(r.weight, r.height);
-                const gr = getGrasa(r.fat, selClient.age, selClient.gender);
-                const ms = getMusc(r.muscle, selClient.age, selClient.gender);
-                const vs = getVisc(r.visceral);
-                
+                const imc = (r.weight / ((r.height/100)*(r.height/100))).toFixed(1);
                 const div = document.createElement('div');
-                div.className = "card-wellness p-6 space-y-4 overflow-hidden relative";
+                div.className = "bg-white p-5 rounded-[2rem] border border-emerald-50 shadow-sm space-y-4";
                 div.innerHTML = `
-                    <div class="flex justify-between border-b border-emerald-50 pb-3 items-center">
-                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">${new Date(r.date).toLocaleDateString('es-MX')}</span>
-                        <span class="text-emerald-700 bg-emerald-50 px-4 py-1 rounded-full text-xs font-extrabold">${r.weight} kg</span>
+                    <div class="flex justify-between border-b border-emerald-50 pb-2 text-[9px] font-bold text-emerald-300 uppercase tracking-widest">
+                        <span>${new Date(r.date).toLocaleDateString()}</span>
+                        <span class="text-emerald-700 font-extrabold">${r.weight} KG</span>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="p-3 ${imc.bg} rounded-2xl text-center">
-                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">IMC</p>
-                            <p class="text-sm font-extrabold text-slate-700 leading-none">${imc.val}</p>
-                            <p class="text-[8px] font-bold ${imc.c} uppercase mt-1">${imc.l}</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
-                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">GRASA %</p>
-                            <p class="text-sm font-extrabold text-slate-700 leading-none">${r.fat}%</p>
-                            <p class="text-[8px] font-bold ${gr.c} uppercase mt-1">${gr.l}</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
-                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">MÚSCULO %</p>
-                            <p class="text-sm font-extrabold text-slate-700 leading-none">${r.muscle}%</p>
-                            <p class="text-[8px] font-bold ${ms.c} uppercase mt-1">${ms.l}</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl text-center">
-                            <p class="text-[8px] font-bold text-emerald-800/40 uppercase mb-1">VISCERAL</p>
-                            <p class="
+                        <div class="p-2 bg-emerald-50/50 rounded-xl text-center"><p class="text-[8px] font-bold text-emerald-800/40 uppercase">IMC</p><p class="text-xs font-extrabold">${imc}</p></div>
+                        <div class="p-2 bg-slate-50 rounded-xl text-center"><p class="text-[8px] font-bold text-emerald-800/40 uppercase">GRASA</p><p class="text-xs font-extrabold">${r.fat}%</p></div>
+                        <div class="p-2 bg-slate-50 rounded-xl text-center"><p class="text-[8px] font-bold text-emerald-800/40 uppercase">MÚSCULO</p><p class="text-xs font-extrabold">${r.muscle}%</p></div>
+                        <div class="p-2 bg-slate-50 rounded-xl text-center"><p class="text-[8px] font-bold text-emerald-800/40 uppercase">VISCERAL</p><p class="text-xs font-extrabold">${r.visceral}</p></div>
+                    </div>`;
+                lista.appendChild(div);
+            });
+            if(snap.empty) lista.innerHTML = '<p class="text-center py-20 text-xs font-bold text-emerald-200 uppercase tracking-widest">Sin mediciones</p>';
+            lucide.createIcons();
+        }
+
+        async function guardarEval(e) {
+            e.preventDefault();
+            await clientsRef.doc(selId).collection('evals').add({
+                weight: parseFloat(document.getElementById('ev-p').value),
+                height: parseFloat(document.getElementById('ev-t').value),
+                fat: parseFloat(document.getElementById('ev-g').value),
+                muscle: parseFloat(document.getElementById('ev-m').value),
+                visceral: parseInt(document.getElementById('ev-v').value),
+                date: new Date().toISOString()
+            });
+            e.target.reset();
+            renderHistorial();
+        }
+    </script>
+</body>
+</html>
+
